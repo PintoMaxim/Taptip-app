@@ -21,12 +21,13 @@ export default async function BadgeActivationPage({ params }: PageProps) {
   }
 
   // Badge déjà activé → rediriger vers le profil public
-  if (badge.user_id && badge.users?.stripe_onboarding_complete) {
+  const users = badge.users as { stripe_onboarding_complete?: boolean } | null
+  if (badge.user_id && users?.stripe_onboarding_complete) {
     redirect(`/p/${badge.user_id}`)
   }
 
   // Badge activé mais Stripe pas configuré → rediriger vers le dashboard
-  if (badge.user_id && !badge.users?.stripe_onboarding_complete) {
+  if (badge.user_id && !users?.stripe_onboarding_complete) {
     // Vérifier si c'est le propriétaire qui scanne
     const { data: { user } } = await supabase.auth.getUser()
     
