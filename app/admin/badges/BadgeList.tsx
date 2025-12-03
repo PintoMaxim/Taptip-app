@@ -15,10 +15,13 @@ interface Badge {
     last_name: string | null
     email: string | null
   } | null
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any
 }
 
 interface BadgeListProps {
-  badges: Badge[]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  badges: any[]
 }
 
 export default function BadgeList({ badges }: BadgeListProps) {
