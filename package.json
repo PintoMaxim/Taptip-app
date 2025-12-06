@@ -12,9 +12,9 @@
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.86.0",
     "lucide-react": "^0.555.0",
-    "next": "15.3.3",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "next": "canary",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "react-image-crop": "^11.0.10",
     "stripe": "^20.0.0"
   },
@@ -24,8 +24,12 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "15.3.3",
+    "eslint-config-next": "canary",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "overrides": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   }
 }
