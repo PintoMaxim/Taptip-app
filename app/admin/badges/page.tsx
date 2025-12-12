@@ -32,12 +32,12 @@ export default async function AdminBadgesPage() {
         {/* Header */}
         <header className="px-5 py-4 flex items-center justify-between border-b border-gray-100 sticky top-0 bg-white z-10">
           <div className="flex items-center gap-3">
-            <Link 
-              href="/dashboard" 
+          <Link 
+            href="/dashboard"
               className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
-            >
+          >
               <span className="text-sm">←</span>
-            </Link>
+          </Link>
             <h1 className="text-lg font-bold text-black">🏷️ Gestion des Badges</h1>
           </div>
           <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full font-medium">

@@ -17,7 +17,7 @@ function generateBadgeCode(): string {
 async function isAdmin(): Promise<boolean> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  
+
   if (!user) return false
   
   const adminEmail = process.env.ADMIN_EMAIL || 'contact.taptip@gmail.com'
@@ -86,7 +86,7 @@ export async function createBadges(count: number) {
   }))
 
   revalidatePath('/admin/badges')
-
+  
   return { badges: result }
 }
 
@@ -205,7 +205,7 @@ export async function activateBadge(code: string) {
     })
 
   revalidatePath(`/b/${code}`)
-
+  
   return { success: true }
 }
 

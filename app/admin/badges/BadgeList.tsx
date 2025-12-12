@@ -56,39 +56,39 @@ export default function BadgeList({ badges }: BadgeListProps) {
         <h2 className="text-base font-bold text-black">
           📋 Liste des badges ({filteredBadges.length})
         </h2>
-        
-        {/* Filtres */}
+
+      {/* Filtres */}
         <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
-          <button
-            onClick={() => setFilter('all')}
+        <button
+          onClick={() => setFilter('all')}
             className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
-              filter === 'all' 
+            filter === 'all' 
                 ? 'bg-white text-black shadow-sm' 
                 : 'text-gray-500 hover:text-black'
-            }`}
-          >
+          }`}
+        >
             Tous
-          </button>
-          <button
+        </button>
+        <button
             onClick={() => setFilter('activated')}
             className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
               filter === 'activated' 
                 ? 'bg-white text-black shadow-sm' 
                 : 'text-gray-500 hover:text-black'
-            }`}
-          >
+          }`}
+        >
             Activés
-          </button>
-          <button
+        </button>
+        <button
             onClick={() => setFilter('available')}
             className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
               filter === 'available' 
                 ? 'bg-white text-black shadow-sm' 
                 : 'text-gray-500 hover:text-black'
-            }`}
-          >
+          }`}
+        >
             Disponibles
-          </button>
+        </button>
         </div>
       </div>
 

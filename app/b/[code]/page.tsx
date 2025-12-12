@@ -11,7 +11,7 @@ interface PageProps {
 export default async function BadgeActivationPage({ params }: PageProps) {
   const { code } = await params
   const supabase = await createClient()
-
+  
   // Récupérer le badge
   const { badge, error } = await getBadgeByCode(code)
 
@@ -45,7 +45,7 @@ export default async function BadgeActivationPage({ params }: PageProps) {
           </h1>
           <p className="text-gray-500 text-sm">
             Ce badge est activé mais son propriétaire n'a pas encore terminé la configuration.
-          </p>
+        </p>
         </div>
       </div>
     )
@@ -79,9 +79,9 @@ export default async function BadgeActivationPage({ params }: PageProps) {
         <div className="mx-6 mb-6 p-4 bg-gray-50 rounded-xl text-center">
           <p className="text-xs text-gray-400 mb-1">Code du badge</p>
           <code className="text-lg font-mono font-bold text-black tracking-wider">
-            {badge.code}
+              {badge.code}
           </code>
-        </div>
+          </div>
 
         {/* Formulaire */}
         <main className="flex-1 px-6 pb-8">

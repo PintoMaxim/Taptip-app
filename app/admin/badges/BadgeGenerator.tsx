@@ -17,15 +17,15 @@ export default function BadgeGenerator() {
 
   const handleGenerate = async () => {
     setLoading(true)
-    
+
     const result = await createBadges(count)
-    
+
     if (result.error) {
       alert(result.error)
     } else if (result.badges) {
       setGeneratedBadges(result.badges)
     }
-    
+
     setLoading(false)
   }
 
