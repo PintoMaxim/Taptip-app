@@ -53,14 +53,16 @@ export default function ReviewDrawer({ userId, isOpen, onClose }: ReviewDrawerPr
         onClick={onClose}
       />
 
-      {/* Drawer */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-50 animate-in slide-in-from-bottom duration-300 safe-area-inset-bottom">
-        {/* Handle */}
-        <div className="flex justify-center pt-3 pb-2">
-          <div className="w-10 h-1 bg-gray-300 rounded-full" />
-        </div>
+      {/* Container centré */}
+      <div className="fixed inset-0 z-50 flex items-end justify-center pointer-events-none">
+        {/* Drawer */}
+        <div className="w-full max-w-[390px] bg-white rounded-t-3xl animate-in slide-in-from-bottom duration-300 pointer-events-auto">
+          {/* Handle */}
+          <div className="flex justify-center pt-3 pb-2">
+            <div className="w-10 h-1 bg-gray-300 rounded-full" />
+          </div>
 
-        <div className="px-6 pb-8">
+          <div className="px-6 pb-8">
           {sent ? (
             /* Message de succès */
             <div className="py-12 text-center">
@@ -128,6 +130,7 @@ export default function ReviewDrawer({ userId, isOpen, onClose }: ReviewDrawerPr
               </button>
             </>
           )}
+        </div>
         </div>
       </div>
     </>
