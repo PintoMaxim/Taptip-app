@@ -70,10 +70,11 @@ export async function getStripeOnboardingLink() {
   }
 
   // Générer le lien d'onboarding
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://app.taptip.fr'
   const accountLink = await stripe.accountLinks.create({
     account: accountId,
-    refresh_url: 'http://localhost:3000/dashboard',
-    return_url: 'http://localhost:3000/dashboard',
+    refresh_url: `${baseUrl}/dashboard/settings`,
+    return_url: `${baseUrl}/dashboard/settings`,
     type: 'account_onboarding',
   })
 
