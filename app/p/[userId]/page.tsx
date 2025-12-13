@@ -117,7 +117,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
       {/* Footer */}
       <footer className="py-6 text-center">
         <p className="text-xs text-gray-300">
-          Propulsé par <span className="font-bold text-gray-400">KOD</span>
+          Propulsé par <span className="font-bold text-gray-400">TapTip</span>
         </p>
       </footer>
     </div>
