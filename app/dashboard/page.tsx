@@ -5,6 +5,7 @@ import { getProfile } from '@/app/actions/profile'
 import { checkStripeStatus } from '@/app/actions/stripe'
 import ShareButton from './ShareButton'
 import ActivityList from './ActivityList'
+import BottomNav from './BottomNav'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -159,14 +160,12 @@ export default async function DashboardPage() {
             <ActivityList activities={activities} />
           </section>
 
-          {/* Paramètres */}
-          <Link
-            href="/dashboard/settings"
-            className="block w-full text-center py-3 text-gray-400 text-xs"
-          >
-            ⚙️ Paramètres
-          </Link>
+          {/* Espace pour la barre de navigation */}
+          <div className="h-20" />
         </main>
+
+        {/* Barre de navigation */}
+        <BottomNav />
       </div>
     </div>
   )

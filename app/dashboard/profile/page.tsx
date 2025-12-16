@@ -2,6 +2,7 @@ import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { getProfile } from '@/app/actions/profile'
 import ProfileForm from '../ProfileForm'
+import BottomNav from '../BottomNav'
 import Link from 'next/link'
 
 export default async function ProfileSettingsPage() {
@@ -39,12 +40,15 @@ export default async function ProfileSettingsPage() {
           <h1 className="text-base font-semibold text-black">Mon Profil</h1>
         </header>
 
-        <main className="px-5 py-6">
+        <main className="px-5 py-6 pb-24">
           <ProfileForm 
             initialData={profile} 
             userId={user.id}
           />
         </main>
+
+        {/* Barre de navigation */}
+        <BottomNav />
       </div>
     </div>
   )

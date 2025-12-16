@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { checkStripeStatus } from '@/app/actions/stripe'
 import StripeConnectButton from '../StripeConnectButton'
 import LogoutButton from '../LogoutButton'
+import BottomNav from '../BottomNav'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -129,7 +130,13 @@ export default async function SettingsPage() {
           <p className="text-center text-[10px] text-gray-300 pt-4">
             TapTip v1.0
           </p>
+
+          {/* Espace pour la barre de navigation */}
+          <div className="h-20" />
         </main>
+
+        {/* Barre de navigation */}
+        <BottomNav />
       </div>
     </div>
   )
