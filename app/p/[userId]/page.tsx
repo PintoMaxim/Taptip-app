@@ -39,7 +39,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
   const initial = userData.first_name?.[0]?.toUpperCase() || userData.email?.[0]?.toUpperCase() || '?'
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Message de succès */}
       {success && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 w-[90%] max-w-[350px] bg-emerald-500 rounded-2xl p-4 text-center shadow-2xl z-50 animate-in fade-in slide-in-from-top duration-500">
@@ -57,7 +57,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
 
       {/* Message d'annulation */}
       {canceled && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 w-[90%] max-w-[350px] bg-slate-800 rounded-2xl p-4 text-center shadow-xl z-50">
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 w-[90%] max-w-[350px] bg-black rounded-2xl p-4 text-center shadow-xl z-50">
           <p className="text-white text-sm">Paiement annulé</p>
         </div>
       )}
@@ -65,11 +65,11 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
       {/* Contenu principal */}
       <main className="flex-1 flex flex-col items-center px-5 pt-12 pb-8">
         {/* Carte Profil */}
-        <div className="w-full max-w-[380px] bg-white rounded-3xl shadow-[0_4px_40px_rgba(0,0,0,0.08)] p-6 mb-6">
+        <div className="w-full max-w-[380px] bg-white rounded-3xl shadow-[0_4px_40px_rgba(0,0,0,0.12)] p-6 mb-6">
           {/* Avatar */}
           <div className="flex justify-center">
             <div className="relative">
-              <div className="w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center ring-4 ring-white shadow-lg">
+              <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center ring-4 ring-white shadow-xl">
                 {userData.avatar_url ? (
                   <img
                     src={userData.avatar_url}
@@ -77,26 +77,26 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span className="text-3xl font-bold text-slate-400">
+                  <span className="text-3xl font-bold text-gray-400">
                     {initial}
                   </span>
                 )}
               </div>
-              {/* Badge vérifié */}
-              <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-black rounded-full flex items-center justify-center shadow-lg">
-                <span className="text-white text-xs">✓</span>
+              {/* Badge vérifié - Vert premium */}
+              <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg">
+                <span className="text-white text-xs font-bold">✓</span>
               </div>
             </div>
           </div>
 
           {/* Nom */}
-          <h1 className="text-xl font-bold text-slate-900 mt-4 text-center">
+          <h1 className="text-xl font-bold text-black mt-4 text-center">
             {displayName}
           </h1>
 
           {/* Métier */}
           {userData.job_title && (
-            <p className="text-slate-500 text-sm mt-0.5 text-center">
+            <p className="text-gray-500 text-sm mt-0.5 text-center">
               {userData.job_title}
             </p>
           )}
@@ -104,18 +104,18 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
           {/* Note et avis */}
           {reviewStats.count > 0 && (
             <div className="flex items-center justify-center gap-2 mt-3">
-              <div className="flex items-center gap-1 bg-amber-50 px-3 py-1.5 rounded-full">
-                <span className="text-amber-500 text-sm">★</span>
-                <span className="text-slate-800 font-bold text-sm">{reviewStats.average}</span>
+              <div className="flex items-center gap-1 bg-gray-100 px-3 py-1.5 rounded-full">
+                <span className="text-yellow-500 text-sm">★</span>
+                <span className="text-black font-bold text-sm">{reviewStats.average}</span>
               </div>
-              <span className="text-slate-300">•</span>
-              <span className="text-slate-500 text-sm">{reviewStats.count} avis</span>
+              <span className="text-gray-300">•</span>
+              <span className="text-gray-500 text-sm">{reviewStats.count} avis</span>
             </div>
           )}
 
           {/* Bio */}
           {userData.bio && (
-            <p className="text-slate-400 text-sm text-center mt-4 leading-relaxed">
+            <p className="text-gray-400 text-sm text-center mt-4 leading-relaxed">
               "{userData.bio}"
             </p>
           )}
@@ -124,7 +124,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
         {/* Section Pourboire */}
         <div className="w-full max-w-[380px]">
           <div className="text-center mb-5">
-            <p className="text-slate-400 text-xs uppercase tracking-widest font-medium">
+            <p className="text-gray-400 text-xs uppercase tracking-widest font-medium">
               Laisser un pourboire
             </p>
           </div>
@@ -141,8 +141,8 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
 
       {/* Footer */}
       <footer className="py-5 text-center">
-        <p className="text-[11px] text-slate-300 tracking-wide">
-          Propulsé par <span className="font-semibold text-slate-400">TapTip</span>
+        <p className="text-[11px] text-gray-300 tracking-wide">
+          Propulsé par <span className="font-semibold text-gray-400">TapTip</span>
         </p>
       </footer>
     </div>

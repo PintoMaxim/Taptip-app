@@ -79,12 +79,12 @@ export default function TipButtons({ userId, stripeAccountId }: TipButtonsProps)
             disabled={loading !== null}
             className={`relative flex-1 h-20 rounded-2xl font-bold transition-all duration-300 active:scale-[0.97] disabled:opacity-50 ${
               selected === index
-                ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/25 scale-[1.02]'
-                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                ? 'bg-black text-white shadow-xl shadow-black/30 scale-[1.02]'
+                : 'bg-white text-black border-2 border-gray-200 hover:border-gray-300 hover:shadow-md'
             }`}
           >
             {tip.popular && (
-              <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+              <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow-md">
                 Populaire
               </span>
             )}
@@ -99,8 +99,8 @@ export default function TipButtons({ userId, stripeAccountId }: TipButtonsProps)
         disabled={loading !== null}
         className={`w-full h-14 rounded-xl font-semibold transition-all duration-200 active:scale-[0.98] disabled:opacity-50 ${
           showCustom 
-            ? 'bg-slate-900 text-white' 
-            : 'bg-transparent border-2 border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-600'
+            ? 'bg-black text-white' 
+            : 'bg-transparent border-2 border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-600'
         }`}
       >
         {showCustom ? 'Montant personnalisé' : 'Autre montant'}
@@ -117,14 +117,14 @@ export default function TipButtons({ userId, stripeAccountId }: TipButtonsProps)
               onChange={(e) => setCustomAmount(e.target.value)}
               min="1"
               step="0.5"
-              className="w-full h-16 rounded-xl bg-slate-50 border-2 border-slate-200 px-4 pr-16 text-2xl text-slate-900 text-center font-bold focus:border-slate-900 focus:bg-white focus:outline-none transition-all"
+              className="w-full h-16 rounded-xl bg-white border-2 border-gray-200 px-4 pr-16 text-2xl text-black text-center font-bold focus:border-black focus:outline-none transition-all shadow-sm"
             />
-            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl font-bold">€</span>
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl font-bold">€</span>
           </div>
           <button
             onClick={handleCustomTip}
             disabled={loading !== null || !customAmount}
-            className="w-full h-14 mt-3 rounded-xl bg-emerald-500 text-white font-bold transition-all hover:bg-emerald-600 active:scale-[0.98] disabled:opacity-50 disabled:bg-slate-300"
+            className="w-full h-14 mt-3 rounded-xl bg-emerald-500 text-white font-bold transition-all hover:bg-emerald-600 active:scale-[0.98] disabled:opacity-50 disabled:bg-gray-300 shadow-lg shadow-emerald-500/25"
           >
             {loading === 99 ? (
               <span className="flex items-center justify-center gap-2">
