@@ -120,9 +120,12 @@ export default async function DashboardPage() {
               href="https://dashboard.stripe.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 h-16 flex flex-col items-center justify-center gap-1 bg-gray-50 rounded-xl border border-gray-100 active:scale-[0.98] transition-transform"
+              className="flex-1 h-16 flex flex-col items-center justify-center gap-1.5 bg-gray-50 rounded-xl border border-gray-100 active:scale-[0.98] transition-transform text-gray-600"
             >
-              <span className="text-xl">💳</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+                <line x1="1" y1="10" x2="23" y2="10" />
+              </svg>
               <span className="text-xs font-medium text-black">Virements</span>
             </a>
           </div>
@@ -131,8 +134,10 @@ export default async function DashboardPage() {
           {!stripeStatus.isComplete && (
             <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center">
-                  <span className="text-base">⚡</span>
+                <div className="w-9 h-9 rounded-full bg-black flex items-center justify-center">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                  </svg>
                 </div>
                 <div className="flex-1">
                   <p className="text-xs font-medium text-black">Configurez vos paiements</p>
