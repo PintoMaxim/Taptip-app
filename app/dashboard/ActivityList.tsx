@@ -53,11 +53,11 @@ export default function ActivityList({ activities }: ActivityListProps) {
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 stagger-children">
       {activities.map((activity) => (
         <div
           key={activity.id}
-          className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl"
+          className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-default"
         >
           <div className={`w-9 h-9 rounded-full flex items-center justify-center ${
             activity.type === 'tip' ? 'bg-black' : 'bg-gray-200'

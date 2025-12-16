@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { getReviewStats } from '@/app/actions/reviews'
 import TipButtons from './TipButtons'
 import ReviewSection from './ReviewSection'
+import SuccessAnimation from './SuccessAnimation'
 
 interface PageProps {
   params: Promise<{ userId: string }>
@@ -40,32 +41,20 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Message de succès */}
-      {success && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 w-[90%] max-w-[350px] bg-emerald-500 rounded-2xl p-4 text-center shadow-2xl z-50 animate-in fade-in slide-in-from-top duration-500">
-          <div className="flex items-center justify-center gap-3">
-            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-              <span className="text-xl">✓</span>
-            </div>
-            <div className="text-left">
-              <p className="text-white font-bold text-sm">Merci beaucoup !</p>
-              <p className="text-emerald-100 text-xs">Votre pourboire a bien été envoyé</p>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Animation de succès avec confettis */}
+      {success && <SuccessAnimation />}
 
       {/* Message d'annulation */}
       {canceled && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 w-[90%] max-w-[350px] bg-black rounded-2xl p-4 text-center shadow-xl z-50">
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 w-[90%] max-w-[350px] bg-black rounded-2xl p-4 text-center shadow-xl z-50 animate-fade-in-up">
           <p className="text-white text-sm">Paiement annulé</p>
         </div>
       )}
 
       {/* Contenu principal */}
       <main className="flex-1 flex flex-col items-center px-5 pt-12 pb-8">
-        {/* Carte Profil */}
-        <div className="w-full max-w-[380px] bg-white rounded-3xl shadow-[0_4px_40px_rgba(0,0,0,0.12)] p-6 mb-6">
+        {/* Carte Profil avec animation */}
+        <div className="w-full max-w-[380px] bg-white rounded-3xl shadow-[0_4px_40px_rgba(0,0,0,0.12)] p-6 mb-6 animate-fade-in-up">
           {/* Avatar */}
           <div className="flex justify-center">
             <div className="relative">
@@ -122,7 +111,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
         </div>
 
         {/* Section Pourboire */}
-        <div className="w-full max-w-[380px]">
+        <div className="w-full max-w-[380px] animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
           <div className="text-center mb-5">
             <p className="text-gray-400 text-xs uppercase tracking-widest font-medium">
               Laisser un pourboire

@@ -64,10 +64,15 @@ export default function ReviewDrawer({ userId, isOpen, onClose }: ReviewDrawerPr
 
           <div className="px-6 pb-8">
           {sent ? (
-            /* Message de succès */
-            <div className="py-12 text-center">
-              <span className="text-5xl">🙏</span>
-              <p className="text-xl font-semibold text-black mt-4">Merci pour votre avis !</p>
+            /* Message de succès animé */
+            <div className="py-10 text-center animate-scale-bounce">
+              <div className="w-16 h-16 mx-auto bg-emerald-500 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/30 mb-4">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+              <p className="text-xl font-bold text-black">Merci !</p>
+              <p className="text-gray-500 text-sm mt-1">Votre avis compte beaucoup</p>
             </div>
           ) : (
             <>
@@ -76,8 +81,8 @@ export default function ReviewDrawer({ userId, isOpen, onClose }: ReviewDrawerPr
                 Laisser un avis
               </h3>
 
-              {/* Étoiles */}
-              <div className="flex justify-center gap-2 mb-6">
+              {/* Étoiles premium */}
+              <div className="flex justify-center gap-3 mb-4">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
                     key={star}
@@ -85,21 +90,27 @@ export default function ReviewDrawer({ userId, isOpen, onClose }: ReviewDrawerPr
                     onClick={() => setRating(star)}
                     onMouseEnter={() => setHoverRating(star)}
                     onMouseLeave={() => setHoverRating(0)}
-                    className="text-4xl transition-transform active:scale-90"
+                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 ${
+                      star <= (hoverRating || rating)
+                        ? 'bg-yellow-400 scale-110 shadow-lg shadow-yellow-400/30'
+                        : 'bg-gray-100 hover:bg-gray-200'
+                    }`}
                   >
-                    {star <= (hoverRating || rating) ? '⭐' : '☆'}
+                    <span className={`text-xl ${star <= (hoverRating || rating) ? 'text-white' : 'text-gray-400'}`}>
+                      ★
+                    </span>
                   </button>
                 ))}
               </div>
 
               {/* Texte de la note */}
-              <p className="text-center text-gray-500 text-sm mb-6">
+              <p className={`text-center text-sm mb-6 font-medium transition-all ${rating > 0 ? 'text-black' : 'text-gray-400'}`}>
                 {rating === 0 && 'Appuyez pour noter'}
-                {rating === 1 && 'Décevant'}
-                {rating === 2 && 'Peut mieux faire'}
-                {rating === 3 && 'Correct'}
-                {rating === 4 && 'Très bien'}
-                {rating === 5 && 'Excellent !'}
+                {rating === 1 && 'Décevant 😕'}
+                {rating === 2 && 'Peut mieux faire 😐'}
+                {rating === 3 && 'Correct 🙂'}
+                {rating === 4 && 'Très bien 😊'}
+                {rating === 5 && 'Excellent ! 🤩'}
               </p>
 
               {/* Commentaire optionnel */}
@@ -109,22 +120,34 @@ export default function ReviewDrawer({ userId, isOpen, onClose }: ReviewDrawerPr
                 placeholder="Un petit mot ? (optionnel)"
                 rows={3}
                 maxLength={200}
-                className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-black placeholder-gray-400 focus:border-black focus:bg-white focus:outline-none transition-all resize-none text-base"
+                className="w-full px-4 py-3 rounded-xl bg-gray-50 border-2 border-gray-100 text-black placeholder-gray-400 focus:border-black focus:bg-white focus:outline-none transition-all resize-none text-base"
               />
 
               {/* Bouton Envoyer */}
               <button
                 onClick={handleSubmit}
                 disabled={rating === 0 || sending}
-                className="w-full h-14 mt-4 rounded-xl bg-black text-white font-semibold transition-all hover:bg-gray-800 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
+                className={`w-full h-14 mt-4 rounded-xl font-semibold transition-all active:scale-[0.98] ${
+                  rating > 0
+                    ? 'bg-black text-white shadow-lg shadow-black/20 hover:shadow-xl'
+                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                }`}
               >
-                {sending ? 'Envoi...' : 'Envoyer'}
+                {sending ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Envoi...
+                  </span>
+                ) : 'Envoyer'}
               </button>
 
               {/* Bouton Annuler */}
               <button
                 onClick={onClose}
-                className="w-full h-12 mt-2 text-gray-500 font-medium"
+                className="w-full h-12 mt-2 text-gray-400 font-medium hover:text-gray-600 transition-colors"
               >
                 Annuler
               </button>

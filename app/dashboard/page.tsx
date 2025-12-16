@@ -6,6 +6,7 @@ import { checkStripeStatus } from '@/app/actions/stripe'
 import ShareButton from './ShareButton'
 import ActivityList from './ActivityList'
 import BottomNav from './BottomNav'
+import PullToRefresh from './PullToRefresh'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -43,8 +44,9 @@ export default async function DashboardPage() {
     <div className="min-h-screen bg-gray-100 flex justify-center">
       {/* Container mobile fixe */}
       <div className="w-full max-w-[390px] min-h-screen bg-white">
+        <PullToRefresh>
         {/* Header */}
-        <header className="px-5 py-4 flex items-center justify-between border-b border-gray-100">
+        <header className="px-5 py-4 flex items-center justify-between border-b border-gray-100 sticky top-0 bg-white z-10">
           <div className="flex items-center gap-3">
             <Image
               src="/logo.png"
@@ -75,7 +77,7 @@ export default async function DashboardPage() {
           </Link>
         </header>
 
-        <main className="px-5 py-5 space-y-5">
+        <main className="px-5 py-5 space-y-5 stagger-children">
           {/* Carte Stats */}
           <div className="bg-black rounded-2xl p-5 text-white relative overflow-hidden">
             <div className="absolute right-3 top-1/2 -translate-y-1/2 opacity-10">
@@ -168,6 +170,7 @@ export default async function DashboardPage() {
           {/* Espace pour la barre de navigation */}
           <div className="h-20" />
         </main>
+        </PullToRefresh>
 
         {/* Barre de navigation */}
         <BottomNav />
