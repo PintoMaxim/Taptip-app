@@ -47,34 +47,36 @@ export default function BottomNav() {
   ]
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl border-t border-gray-200/50 z-50">
-      <div className="flex justify-around items-center h-20 pb-4">
-        {navItems.map((item) => {
-          const isActive = pathname === item.href
-          
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex flex-col items-center justify-center flex-1 py-2 transition-all duration-200 ${
-                isActive 
-                  ? 'text-black' 
-                  : 'text-gray-400 hover:text-gray-600'
-              }`}
-            >
-              <div className={`mb-1 transition-transform duration-200 ${isActive ? 'scale-110' : ''}`}>
-                <item.Icon active={isActive} />
-              </div>
-              <span className={`text-[10px] font-semibold tracking-wide ${
-                isActive ? 'text-black' : 'text-gray-400'
-              }`}>
-                {item.label}
-              </span>
-            </Link>
-          )
-        })}
-      </div>
-    </nav>
+    <div className="fixed bottom-0 left-0 right-0 flex justify-center z-50">
+      <nav className="w-full max-w-[390px] bg-white/95 backdrop-blur-xl border-t border-gray-200/50">
+        <div className="flex justify-around items-center h-16 pb-2">
+          {navItems.map((item) => {
+            const isActive = pathname === item.href
+            
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex flex-col items-center justify-center flex-1 py-2 transition-all duration-200 ${
+                  isActive 
+                    ? 'text-black' 
+                    : 'text-gray-400 hover:text-gray-600'
+                }`}
+              >
+                <div className={`mb-1 transition-transform duration-200 ${isActive ? 'scale-110' : ''}`}>
+                  <item.Icon active={isActive} />
+                </div>
+                <span className={`text-[10px] font-semibold tracking-wide ${
+                  isActive ? 'text-black' : 'text-gray-400'
+                }`}>
+                  {item.label}
+                </span>
+              </Link>
+            )
+          })}
+        </div>
+      </nav>
+    </div>
   )
 }
 
