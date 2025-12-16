@@ -39,71 +39,96 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
   const initial = userData.first_name?.[0]?.toUpperCase() || userData.email?.[0]?.toUpperCase() || '?'
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex flex-col">
       {/* Message de succès */}
       {success && (
-        <div className="fixed top-4 left-4 right-4 bg-green-50 border-2 border-green-200 rounded-2xl p-4 text-center shadow-lg z-50 animate-in fade-in slide-in-from-top duration-300">
-          <span className="text-3xl">🎉</span>
-          <p className="text-green-700 font-semibold mt-2">Merci pour votre pourboire !</p>
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 w-[90%] max-w-[350px] bg-emerald-500 rounded-2xl p-4 text-center shadow-2xl z-50 animate-in fade-in slide-in-from-top duration-500">
+          <div className="flex items-center justify-center gap-3">
+            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+              <span className="text-xl">✓</span>
+            </div>
+            <div className="text-left">
+              <p className="text-white font-bold text-sm">Merci beaucoup !</p>
+              <p className="text-emerald-100 text-xs">Votre pourboire a bien été envoyé</p>
+            </div>
+          </div>
         </div>
       )}
 
       {/* Message d'annulation */}
       {canceled && (
-        <div className="fixed top-4 left-4 right-4 bg-gray-50 border-2 border-gray-200 rounded-2xl p-4 text-center z-50">
-          <p className="text-gray-600">Paiement annulé</p>
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 w-[90%] max-w-[350px] bg-slate-800 rounded-2xl p-4 text-center shadow-xl z-50">
+          <p className="text-white text-sm">Paiement annulé</p>
         </div>
       )}
 
       {/* Contenu principal */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6 py-12">
-        {/* Avatar */}
-        <div className="w-28 h-28 rounded-full overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center shadow-xl border-4 border-white">
-          {userData.avatar_url ? (
-            <img
-              src={userData.avatar_url}
-              alt={displayName}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <span className="text-4xl font-bold text-gray-400">
-              {initial}
-            </span>
+      <main className="flex-1 flex flex-col items-center px-5 pt-12 pb-8">
+        {/* Carte Profil */}
+        <div className="w-full max-w-[380px] bg-white rounded-3xl shadow-[0_4px_40px_rgba(0,0,0,0.08)] p-6 mb-6">
+          {/* Avatar */}
+          <div className="flex justify-center">
+            <div className="relative">
+              <div className="w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center ring-4 ring-white shadow-lg">
+                {userData.avatar_url ? (
+                  <img
+                    src={userData.avatar_url}
+                    alt={displayName}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-3xl font-bold text-slate-400">
+                    {initial}
+                  </span>
+                )}
+              </div>
+              {/* Badge vérifié */}
+              <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-black rounded-full flex items-center justify-center shadow-lg">
+                <span className="text-white text-xs">✓</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Nom */}
+          <h1 className="text-xl font-bold text-slate-900 mt-4 text-center">
+            {displayName}
+          </h1>
+
+          {/* Métier */}
+          {userData.job_title && (
+            <p className="text-slate-500 text-sm mt-0.5 text-center">
+              {userData.job_title}
+            </p>
+          )}
+
+          {/* Note et avis */}
+          {reviewStats.count > 0 && (
+            <div className="flex items-center justify-center gap-2 mt-3">
+              <div className="flex items-center gap-1 bg-amber-50 px-3 py-1.5 rounded-full">
+                <span className="text-amber-500 text-sm">★</span>
+                <span className="text-slate-800 font-bold text-sm">{reviewStats.average}</span>
+              </div>
+              <span className="text-slate-300">•</span>
+              <span className="text-slate-500 text-sm">{reviewStats.count} avis</span>
+            </div>
+          )}
+
+          {/* Bio */}
+          {userData.bio && (
+            <p className="text-slate-400 text-sm text-center mt-4 leading-relaxed">
+              "{userData.bio}"
+            </p>
           )}
         </div>
 
-        {/* Nom */}
-        <h1 className="text-2xl font-bold text-black mt-5 text-center">
-          {displayName}
-        </h1>
-
-        {/* Métier */}
-        {userData.job_title && (
-          <p className="text-gray-500 text-base mt-1">
-            {userData.job_title}
-          </p>
-        )}
-
-        {/* Note et avis */}
-        {reviewStats.count > 0 && (
-          <div className="flex items-center gap-1.5 mt-3">
-            <span className="text-yellow-500 text-lg">⭐</span>
-            <span className="text-black font-semibold">{reviewStats.average}</span>
-            <span className="text-gray-400 text-sm">/5</span>
-            <span className="text-gray-300 mx-1">•</span>
-            <span className="text-gray-500 text-sm">{reviewStats.count} avis</span>
+        {/* Section Pourboire */}
+        <div className="w-full max-w-[380px]">
+          <div className="text-center mb-5">
+            <p className="text-slate-400 text-xs uppercase tracking-widest font-medium">
+              Laisser un pourboire
+            </p>
           </div>
-        )}
 
-        {/* Bio */}
-        {userData.bio && (
-          <p className="text-gray-400 text-sm text-center max-w-xs mt-4 leading-relaxed italic">
-            &ldquo;{userData.bio}&rdquo;
-          </p>
-        )}
-
-        {/* Boutons de pourboire */}
-        <div className="mt-8 w-full max-w-xs">
           <TipButtons 
             userId={userId} 
             stripeAccountId={userData.stripe_account_id} 
@@ -115,9 +140,9 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
       </main>
 
       {/* Footer */}
-      <footer className="py-6 text-center">
-        <p className="text-xs text-gray-300">
-          Propulsé par <span className="font-bold text-gray-400">TapTip</span>
+      <footer className="py-5 text-center">
+        <p className="text-[11px] text-slate-300 tracking-wide">
+          Propulsé par <span className="font-semibold text-slate-400">TapTip</span>
         </p>
       </footer>
     </div>
