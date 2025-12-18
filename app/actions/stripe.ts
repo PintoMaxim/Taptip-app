@@ -52,34 +52,34 @@ export async function createStripeAccount() {
 // Génère un lien d'onboarding Stripe
 export async function getStripeOnboardingLink() {
   try {
-    if (!isStripeConfigured() || !stripe) {
-      return { error: 'Stripe non configuré' }
-    }
+  if (!isStripeConfigured() || !stripe) {
+    return { error: 'Stripe non configuré' }
+  }
 
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
 
-    if (!user) {
-      return { error: 'Non authentifié' }
-    }
+  if (!user) {
+    return { error: 'Non authentifié' }
+  }
 
-    // Récupérer ou créer le compte Stripe
-    const { accountId, error } = await createStripeAccount()
+  // Récupérer ou créer le compte Stripe
+  const { accountId, error } = await createStripeAccount()
 
-    if (error || !accountId) {
-      return { error: error || 'Impossible de créer le compte Stripe' }
-    }
+  if (error || !accountId) {
+    return { error: error || 'Impossible de créer le compte Stripe' }
+  }
 
-    // Générer le lien d'onboarding
+  // Générer le lien d'onboarding
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://app.taptip.fr'
-    const accountLink = await stripe.accountLinks.create({
-      account: accountId,
+  const accountLink = await stripe.accountLinks.create({
+    account: accountId,
       refresh_url: `${baseUrl}/dashboard/settings`,
       return_url: `${baseUrl}/dashboard/settings`,
-      type: 'account_onboarding',
-    })
+    type: 'account_onboarding',
+  })
 
-    return { url: accountLink.url }
+  return { url: accountLink.url }
   } catch (err) {
     console.error('Erreur getStripeOnboardingLink:', err)
     return { error: 'Erreur lors de la connexion à Stripe' }

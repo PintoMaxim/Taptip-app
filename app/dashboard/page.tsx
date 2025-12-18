@@ -30,12 +30,32 @@ export default async function DashboardPage() {
 
   const renderStars = (rating: number) => {
     const stars = []
+    const floorRating = Math.floor(rating)
+    const hasHalfStar = rating % 1 >= 0.5
+
     for (let i = 1; i <= 5; i++) {
-      stars.push(
-        <span key={i} className={i <= Math.round(rating) ? 'text-amber-400' : 'text-gray-600'}>
-          ★
-        </span>
-      )
+      if (i <= floorRating) {
+        stars.push(
+          <span key={i} className="text-amber-400">
+            ★
+          </span>
+        )
+      } else if (i === floorRating + 1 && hasHalfStar) {
+        stars.push(
+          <span key={i} className="relative text-gray-600">
+            ★
+            <span className="absolute left-0 top-0 text-amber-400 overflow-hidden w-[50%]">
+              ★
+            </span>
+          </span>
+        )
+      } else {
+        stars.push(
+          <span key={i} className="text-gray-600">
+            ★
+          </span>
+        )
+      }
     }
     return stars
   }

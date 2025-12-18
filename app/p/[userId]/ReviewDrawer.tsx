@@ -55,14 +55,14 @@ export default function ReviewDrawer({ userId, isOpen, onClose }: ReviewDrawerPr
 
       {/* Container centré */}
       <div className="fixed inset-0 z-50 flex items-end justify-center pointer-events-none">
-        {/* Drawer */}
+      {/* Drawer */}
         <div className="w-full max-w-[390px] bg-white rounded-t-3xl animate-in slide-in-from-bottom duration-300 pointer-events-auto">
-          {/* Handle */}
-          <div className="flex justify-center pt-3 pb-2">
-            <div className="w-10 h-1 bg-gray-300 rounded-full" />
-          </div>
+        {/* Handle */}
+        <div className="flex justify-center pt-3 pb-2">
+          <div className="w-10 h-1 bg-gray-300 rounded-full" />
+        </div>
 
-          <div className="px-6 pb-8">
+        <div className="px-6 pb-8">
           {sent ? (
             /* Message de succès animé */
             <div className="py-10 text-center animate-scale-bounce">

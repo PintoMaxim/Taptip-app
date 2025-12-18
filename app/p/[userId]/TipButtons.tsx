@@ -94,31 +94,31 @@ export default function TipButtons({ userId, stripeAccountId }: TipButtonsProps)
       </div>
 
       {/* Bouton Autre montant */}
-      <button
-        onClick={() => setShowCustom(!showCustom)}
-        disabled={loading !== null}
+        <button
+          onClick={() => setShowCustom(!showCustom)}
+          disabled={loading !== null}
         className={`w-full h-14 rounded-xl font-semibold transition-all duration-200 active:scale-[0.98] disabled:opacity-50 ${
           showCustom 
             ? 'bg-black text-white' 
             : 'bg-transparent border-2 border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-600'
         }`}
-      >
+        >
         {showCustom ? 'Montant personnalisé' : 'Autre montant'}
-      </button>
+        </button>
 
       {/* Input montant personnalisé */}
       {showCustom && (
         <div className="mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
           <div className="relative">
-            <input
-              type="number"
+          <input
+            type="number"
               placeholder="0"
-              value={customAmount}
-              onChange={(e) => setCustomAmount(e.target.value)}
-              min="1"
-              step="0.5"
+            value={customAmount}
+            onChange={(e) => setCustomAmount(e.target.value)}
+            min="1"
+            step="0.5"
               className="w-full h-16 rounded-xl bg-white border-2 border-gray-200 px-4 pr-16 text-2xl text-black text-center font-bold focus:border-black focus:outline-none transition-all shadow-sm"
-            />
+          />
             <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl font-bold">€</span>
           </div>
           <button

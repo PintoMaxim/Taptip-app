@@ -55,59 +55,59 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
       <main className="flex-1 flex flex-col items-center px-5 pt-12 pb-8">
         {/* Carte Profil avec animation */}
         <div className="w-full max-w-[380px] bg-white rounded-3xl shadow-[0_4px_40px_rgba(0,0,0,0.12)] p-6 mb-6 animate-fade-in-up">
-          {/* Avatar */}
+        {/* Avatar */}
           <div className="flex justify-center">
             <div className="relative">
               <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center ring-4 ring-white shadow-xl">
-                {userData.avatar_url ? (
-                  <img
-                    src={userData.avatar_url}
-                    alt={displayName}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
+          {userData.avatar_url ? (
+            <img
+              src={userData.avatar_url}
+              alt={displayName}
+              className="w-full h-full object-cover"
+            />
+          ) : (
                   <span className="text-3xl font-bold text-gray-400">
-                    {initial}
-                  </span>
-                )}
+              {initial}
+            </span>
+          )}
               </div>
               {/* Badge vérifié - Vert premium */}
               <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg">
                 <span className="text-white text-xs font-bold">✓</span>
               </div>
             </div>
-          </div>
+        </div>
 
-          {/* Nom */}
+        {/* Nom */}
           <h1 className="text-xl font-bold text-black mt-4 text-center">
-            {displayName}
-          </h1>
+          {displayName}
+        </h1>
 
-          {/* Métier */}
-          {userData.job_title && (
+        {/* Métier */}
+        {userData.job_title && (
             <p className="text-gray-500 text-sm mt-0.5 text-center">
-              {userData.job_title}
-            </p>
-          )}
+            {userData.job_title}
+          </p>
+        )}
 
-          {/* Note et avis */}
-          {reviewStats.count > 0 && (
+        {/* Note et avis */}
+        {reviewStats.count > 0 && (
             <div className="flex items-center justify-center gap-2 mt-3">
               <div className="flex items-center gap-1 bg-gray-100 px-3 py-1.5 rounded-full">
                 <span className="text-yellow-500 text-sm">★</span>
                 <span className="text-black font-bold text-sm">{reviewStats.average}</span>
               </div>
               <span className="text-gray-300">•</span>
-              <span className="text-gray-500 text-sm">{reviewStats.count} avis</span>
-            </div>
-          )}
+            <span className="text-gray-500 text-sm">{reviewStats.count} avis</span>
+          </div>
+        )}
 
-          {/* Bio */}
-          {userData.bio && (
+        {/* Bio */}
+        {userData.bio && (
             <p className="text-gray-400 text-sm text-center mt-4 leading-relaxed">
               "{userData.bio}"
-            </p>
-          )}
+          </p>
+        )}
         </div>
 
         {/* Section Pourboire */}
