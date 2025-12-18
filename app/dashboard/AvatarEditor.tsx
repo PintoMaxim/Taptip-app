@@ -193,7 +193,6 @@ export default function AvatarEditor({
           ref={fileInputRef}
           type="file"
           accept="image/*"
-          capture="user"
           onChange={handleFileSelect}
           className="hidden"
         />
