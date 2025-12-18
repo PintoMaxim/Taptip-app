@@ -23,9 +23,6 @@ export default async function SettingsPage() {
       <div className="w-full max-w-[390px] min-h-screen bg-white">
         {/* Header */}
         <header className="px-5 py-4 flex items-center gap-3 border-b border-gray-100">
-          <Link href="/dashboard" className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100">
-            <span className="text-sm">←</span>
-          </Link>
           <Image
             src="/logo.png"
             alt="Logo"
