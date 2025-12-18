@@ -3,10 +3,62 @@
 import { useEffect, useState } from 'react'
 import Confetti from '@/app/components/Confetti'
 
+// Fonction pour jouer le son "cha-ching" style Shopify
+function playSuccessSound() {
+  try {
+    const audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
+    
+    // Son 1: "Cha" - son métallique initial
+    const osc1 = audioContext.createOscillator()
+    const gain1 = audioContext.createGain()
+    osc1.type = 'sine'
+    osc1.frequency.setValueAtTime(1200, audioContext.currentTime)
+    osc1.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.1)
+    gain1.gain.setValueAtTime(0.3, audioContext.currentTime)
+    gain1.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1)
+    osc1.connect(gain1)
+    gain1.connect(audioContext.destination)
+    osc1.start(audioContext.currentTime)
+    osc1.stop(audioContext.currentTime + 0.1)
+
+    // Son 2: "Ching" - son de clochette satisfaisant
+    const osc2 = audioContext.createOscillator()
+    const gain2 = audioContext.createGain()
+    osc2.type = 'sine'
+    osc2.frequency.setValueAtTime(1800, audioContext.currentTime + 0.08)
+    osc2.frequency.exponentialRampToValueAtTime(2400, audioContext.currentTime + 0.15)
+    gain2.gain.setValueAtTime(0, audioContext.currentTime)
+    gain2.gain.setValueAtTime(0.4, audioContext.currentTime + 0.08)
+    gain2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5)
+    osc2.connect(gain2)
+    gain2.connect(audioContext.destination)
+    osc2.start(audioContext.currentTime + 0.08)
+    osc2.stop(audioContext.currentTime + 0.5)
+
+    // Son 3: Harmonique pour plus de richesse
+    const osc3 = audioContext.createOscillator()
+    const gain3 = audioContext.createGain()
+    osc3.type = 'sine'
+    osc3.frequency.setValueAtTime(3600, audioContext.currentTime + 0.08)
+    gain3.gain.setValueAtTime(0, audioContext.currentTime)
+    gain3.gain.setValueAtTime(0.15, audioContext.currentTime + 0.08)
+    gain3.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3)
+    osc3.connect(gain3)
+    gain3.connect(audioContext.destination)
+    osc3.start(audioContext.currentTime + 0.08)
+    osc3.stop(audioContext.currentTime + 0.3)
+  } catch {
+    // Audio non supporté - pas grave
+  }
+}
+
 export default function SuccessOverlay() {
   const [show, setShow] = useState(true)
 
   useEffect(() => {
+    // Jouer le son "cha-ching" style Shopify
+    playSuccessSound()
+    
     // Vibration haptique si disponible
     if (navigator.vibrate) {
       navigator.vibrate([100, 50, 100])
