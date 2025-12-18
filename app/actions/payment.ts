@@ -40,6 +40,7 @@ export async function createCheckoutSession({
       ],
       payment_intent_data: {
         application_fee_amount: applicationFee,
+        on_behalf_of: destinationAccountId, // Frais Stripe prélevés sur le porteur, pas sur TapTip
         transfer_data: {
           destination: destinationAccountId,
         },
