@@ -32,7 +32,7 @@ export default async function DashboardPage() {
     const stars = []
     for (let i = 1; i <= 5; i++) {
       stars.push(
-        <span key={i} className={i <= Math.round(rating) ? 'text-white' : 'text-gray-600'}>
+        <span key={i} className={i <= Math.round(rating) ? 'text-amber-400' : 'text-gray-600'}>
           ★
         </span>
       )
@@ -41,7 +41,7 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center">
+    <div className="min-h-screen bg-white flex justify-center">
       {/* Container mobile fixe */}
       <div className="w-full max-w-[390px] min-h-screen bg-white">
         <PullToRefresh>

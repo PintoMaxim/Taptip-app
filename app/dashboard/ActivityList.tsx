@@ -57,12 +57,12 @@ export default function ActivityList({ activities }: ActivityListProps) {
       {activities.map((activity) => (
         <div
           key={activity.id}
-          className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-default"
+          className="flex items-center gap-3 p-3 bg-gray-50/50 rounded-xl hover:bg-gray-100/50 transition-colors cursor-default"
         >
           <div className={`w-9 h-9 rounded-full flex items-center justify-center ${
-            activity.type === 'tip' ? 'bg-black' : 'bg-gray-200'
+            activity.type === 'tip' ? 'bg-white border-2 border-emerald-500' : 'bg-gray-100'
           }`}>
-            <span className={`text-sm ${activity.type === 'tip' ? 'text-white' : ''}`}>
+            <span className={`text-sm font-semibold ${activity.type === 'tip' ? 'text-emerald-500' : 'text-amber-400'}`}>
               {activity.type === 'tip' ? '€' : '★'}
             </span>
           </div>
@@ -83,12 +83,12 @@ export default function ActivityList({ activities }: ActivityListProps) {
 
           <div className="text-right">
             {activity.type === 'tip' ? (
-              <span className="text-base font-bold text-black">
+              <span className="text-base font-bold text-emerald-600">
                 +{formatAmount(activity.amount!)}
               </span>
             ) : (
               <div className="flex items-center gap-0.5">
-                <span className="text-black text-xs">★</span>
+                <span className="text-amber-400 text-xs">★</span>
                 <span className="font-semibold text-black text-sm">{activity.rating}</span>
               </div>
             )}

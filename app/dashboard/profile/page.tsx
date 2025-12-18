@@ -17,7 +17,7 @@ export default async function ProfileSettingsPage() {
   const firstName = profile?.first_name || 'U'
 
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center">
+    <div className="min-h-screen bg-white flex justify-center">
       {/* Container mobile fixe */}
       <div className="w-full max-w-[390px] min-h-screen bg-white">
         {/* Header */}
