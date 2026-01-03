@@ -60,14 +60,14 @@ export default async function SettingsPage() {
               Parrainage
             </h2>
             
-            {/* Carte Parrain (si l'utilisateur a un code) */}
-            {referralCode && (
+            {/* Carte Parrain : SEULEMENT si Stripe est configuré */}
+            {referralCode && stripeStatus.isComplete && (
               <div className="mb-3">
                 <ReferralCard referralCode={referralCode} referralCount={referralCount} />
               </div>
             )}
             
-            {/* Formulaire Filleul */}
+            {/* Formulaire Filleul (avec cadenas si Stripe pas configuré) */}
             <ReferralClaim 
               isStripeComplete={stripeStatus.isComplete}
               hasAlreadyClaimed={!!profile?.referred_by}

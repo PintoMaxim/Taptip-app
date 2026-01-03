@@ -1,5 +1,12 @@
 -- MISE À JOUR : SYSTÈME AMBASSADEUR PREMIUM
 
+-- 0. Ajouter la colonne referral_code à la table badges
+-- Chaque badge a son propre code de parrainage pré-généré
+ALTER TABLE badges
+ADD COLUMN IF NOT EXISTS referral_code TEXT UNIQUE;
+
+CREATE INDEX IF NOT EXISTS idx_badges_referral_code ON badges(referral_code);
+
 -- 1. Mise à jour de la table users
 ALTER TABLE users 
 ADD COLUMN IF NOT EXISTS referral_code TEXT UNIQUE,

@@ -13,6 +13,17 @@ function generateBadgeCode(): string {
   return code
 }
 
+// Génère un code de parrainage unique (6 caractères + 2 chiffres)
+function generateReferralCode(): string {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ' // Sans I, O pour éviter confusion
+  let code = ''
+  for (let i = 0; i < 4; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length))
+  }
+  code += Math.floor(10 + Math.random() * 89) // 2 chiffres (10-99)
+  return code
+}
+
 // Vérifie si l'utilisateur est admin
 async function isAdmin(): Promise<boolean> {
   const supabase = await createClient()
@@ -23,8 +34,6 @@ async function isAdmin(): Promise<boolean> {
   const adminEmail = process.env.ADMIN_EMAIL || 'contact.taptip@gmail.com'
   return user.email === adminEmail
 }
-
-import { generateUserReferralCode } from './referral'
 
 // Crée plusieurs badges d'un coup
 export async function createBadges(count: number) {
@@ -43,27 +52,44 @@ export async function createBadges(count: number) {
   const badges = []
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
 
-  // Générer les codes uniques
+  // Générer les codes uniques (badge + parrainage)
   for (let i = 0; i < count; i++) {
-    let code = generateBadgeCode()
+    let badgeCode = generateBadgeCode()
+    let referralCode = generateReferralCode()
     let attempts = 0
     
-    // S'assurer que le code est unique
+    // S'assurer que le code badge est unique
     while (attempts < 10) {
       const { data: existing } = await supabase
         .from('badges')
         .select('code')
-        .eq('code', code)
+        .eq('code', badgeCode)
         .single()
       
       if (!existing) break
       
-      code = generateBadgeCode()
+      badgeCode = generateBadgeCode()
+      attempts++
+    }
+
+    // S'assurer que le code parrainage est unique
+    attempts = 0
+    while (attempts < 10) {
+      const { data: existing } = await supabase
+        .from('badges')
+        .select('referral_code')
+        .eq('referral_code', referralCode)
+        .single()
+      
+      if (!existing) break
+      
+      referralCode = generateReferralCode()
       attempts++
     }
 
     badges.push({
-      code,
+      code: badgeCode,
+      referral_code: referralCode,
       created_by: user?.id,
     })
   }
@@ -83,6 +109,7 @@ export async function createBadges(count: number) {
   const result = data.map(badge => ({
     id: badge.id,
     code: badge.code,
+    referral_code: badge.referral_code,
     url: `${baseUrl}/b/${badge.code}`,
     created_at: badge.created_at,
   }))
@@ -106,6 +133,7 @@ export async function getAllBadges() {
     .select(`
       id,
       code,
+      referral_code,
       user_id,
       activated_at,
       created_at,
@@ -171,7 +199,7 @@ export async function activateBadge(code: string) {
   // Vérifier que le badge existe et n'est pas déjà activé
   const { data: badge } = await supabase
     .from('badges')
-    .select('id, user_id')
+    .select('id, user_id, referral_code')
     .eq('code', code.toUpperCase())
     .single()
 
@@ -197,25 +225,15 @@ export async function activateBadge(code: string) {
     return { error: 'Erreur lors de l\'activation' }
   }
 
-  // Créer/mettre à jour le profil utilisateur
+  // Créer/mettre à jour le profil utilisateur avec le code de parrainage du badge
   await supabase
     .from('users')
     .upsert({
       id: user.id,
       email: user.email,
+      referral_code: badge.referral_code, // Le code du badge est transféré à l'utilisateur
       updated_at: new Date().toISOString(),
     })
-
-  // Générer un code de parrainage s'il n'en a pas
-  const { data: currentUser } = await supabase
-    .from('users')
-    .select('referral_code, first_name')
-    .eq('id', user.id)
-    .single()
-
-  if (!currentUser?.referral_code) {
-    await generateUserReferralCode(user.id, currentUser?.first_name || undefined)
-  }
 
   revalidatePath(`/b/${code}`)
   
