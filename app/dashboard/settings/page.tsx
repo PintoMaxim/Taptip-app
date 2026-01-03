@@ -2,7 +2,9 @@ import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { checkStripeStatus } from '@/app/actions/stripe'
 import { getProfile } from '@/app/actions/profile'
+import { getReferralStats } from '@/app/actions/referral'
 import ReferralClaim from './ReferralClaim'
+import ReferralCard from '../ReferralCard'
 import StripeConnectButton from '../StripeConnectButton'
 import LogoutButton from '../LogoutButton'
 import BottomNav from '../BottomNav'
@@ -17,12 +19,15 @@ export default async function SettingsPage() {
     redirect('/login')
   }
 
-  const [stripeStatus, profileResult] = await Promise.all([
+  const [stripeStatus, profileResult, referralData] = await Promise.all([
     checkStripeStatus(),
-    getProfile()
+    getProfile(),
+    getReferralStats()
   ])
 
   const profile = profileResult.profile
+  const referralCode = profile?.referral_code || ''
+  const referralCount = referralData.stats?.totalCount || 0
 
   // Récupérer la date du premier badge activé pour le délai de 7 jours
   const { data: firstBadge } = await supabase
@@ -49,12 +54,26 @@ export default async function SettingsPage() {
         </header>
 
         <main className="px-5 py-5 space-y-5">
-          {/* Section Parrainage (Filleul) */}
-          <ReferralClaim 
-            isStripeComplete={stripeStatus.isComplete}
-            hasAlreadyClaimed={!!profile?.referred_by}
-            firstBadgeActivationDate={firstBadge?.activated_at}
-          />
+          {/* Section Parrainage */}
+          <section>
+            <h2 className="text-[10px] text-gray-400 uppercase tracking-wider mb-2 ml-1">
+              Parrainage
+            </h2>
+            
+            {/* Carte Parrain (si l'utilisateur a un code) */}
+            {referralCode && (
+              <div className="mb-3">
+                <ReferralCard referralCode={referralCode} referralCount={referralCount} />
+              </div>
+            )}
+            
+            {/* Formulaire Filleul */}
+            <ReferralClaim 
+              isStripeComplete={stripeStatus.isComplete}
+              hasAlreadyClaimed={!!profile?.referred_by}
+              firstBadgeActivationDate={firstBadge?.activated_at}
+            />
+          </section>
 
           {/* Section Paiements */}
           <section>

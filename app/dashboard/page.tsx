@@ -3,12 +3,10 @@ import { redirect } from 'next/navigation'
 import { getUserStats, getActivity } from '@/app/actions/stats'
 import { getProfile } from '@/app/actions/profile'
 import { checkStripeStatus } from '@/app/actions/stripe'
-import { getReferralStats } from '@/app/actions/referral'
 import ShareButton from './ShareButton'
 import ActivityList from './ActivityList'
 import BottomNav from './BottomNav'
 import PullToRefresh from './PullToRefresh'
-import ReferralCard from './ReferralCard'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -20,18 +18,15 @@ export default async function DashboardPage() {
     redirect('/login')
   }
 
-  const [profileResult, stripeStatus, stats, activities, referralData] = await Promise.all([
+  const [profileResult, stripeStatus, stats, activities] = await Promise.all([
     getProfile(),
     checkStripeStatus(),
     getUserStats(user.id),
     getActivity(user.id, 10),
-    getReferralStats(),
   ])
 
   const profile = profileResult.profile
   const firstName = profile?.first_name || 'Utilisateur'
-  const referralCode = profile?.referral_code || ''
-  const referralCount = referralData.stats?.totalCount || 0
 
   const renderStars = (rating: number) => {
     const stars = []
@@ -178,11 +173,6 @@ export default async function DashboardPage() {
                 </Link>
               </div>
             </div>
-          )}
-
-          {/* Carte Parrainage */}
-          {referralCode && (
-            <ReferralCard referralCode={referralCode} referralCount={referralCount} />
           )}
 
           {/* Activité */}
