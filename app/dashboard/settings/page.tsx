@@ -1,6 +1,8 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { checkStripeStatus } from '@/app/actions/stripe'
+import { getProfile } from '@/app/actions/profile'
+import ReferralClaim from './ReferralClaim'
 import StripeConnectButton from '../StripeConnectButton'
 import LogoutButton from '../LogoutButton'
 import BottomNav from '../BottomNav'
@@ -15,7 +17,21 @@ export default async function SettingsPage() {
     redirect('/login')
   }
 
-  const stripeStatus = await checkStripeStatus()
+  const [stripeStatus, profileResult] = await Promise.all([
+    checkStripeStatus(),
+    getProfile()
+  ])
+
+  const profile = profileResult.profile
+
+  // Récupérer la date du premier badge activé pour le délai de 7 jours
+  const { data: firstBadge } = await supabase
+    .from('badges')
+    .select('activated_at')
+    .eq('user_id', user.id)
+    .order('activated_at', { ascending: true })
+    .limit(1)
+    .single()
 
   return (
     <div className="min-h-screen bg-white flex justify-center">
@@ -33,6 +49,13 @@ export default async function SettingsPage() {
         </header>
 
         <main className="px-5 py-5 space-y-5">
+          {/* Section Parrainage (Filleul) */}
+          <ReferralClaim 
+            isStripeComplete={stripeStatus.isComplete}
+            hasAlreadyClaimed={!!profile?.referred_by}
+            firstBadgeActivationDate={firstBadge?.activated_at}
+          />
+
           {/* Section Paiements */}
           <section>
             <h2 className="text-[10px] text-gray-400 uppercase tracking-wider mb-2 ml-1">

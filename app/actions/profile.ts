@@ -19,7 +19,7 @@ export async function getProfile() {
     return { error: 'Non authentifié', profile: null }
   }
 
-  const { data: profile, error } = await supabase
+  let { data: profile, error } = await supabase
     .from('users')
     .select('*')
     .eq('id', user.id)
@@ -29,7 +29,47 @@ export async function getProfile() {
     return { error: error.message, profile: null }
   }
 
+  // Si l'utilisateur n'a pas encore de code de parrainage, on lui en génère un
+  if (profile && !profile.referral_code) {
+    const code = await generateReferralCode(profile.first_name || 'TIP')
+    const { data: updatedProfile } = await supabase
+      .from('users')
+      .update({ referral_code: code })
+      .eq('id', user.id)
+      .select()
+      .single()
+    
+    if (updatedProfile) profile = updatedProfile
+  }
+
   return { profile, error: null }
+}
+
+// Génère un code de parrainage unique basé sur le prénom ou aléatoire
+async function generateReferralCode(firstName?: string): Promise<string> {
+  const supabase = await createClient()
+  const base = (firstName || 'TIP').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6)
+  
+  let code = base
+  let exists = true
+  let attempts = 0
+
+  while (exists && attempts < 10) {
+    if (attempts > 0) {
+      code = `${base}${Math.floor(Math.random() * 999)}`
+    }
+    
+    const { data } = await supabase
+      .from('users')
+      .select('referral_code')
+      .eq('referral_code', code)
+      .single()
+    
+    if (!data) exists = false
+    attempts++
+  }
+  
+  return code
 }
 
 // Mettre à jour le profil

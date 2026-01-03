@@ -24,6 +24,8 @@ async function isAdmin(): Promise<boolean> {
   return user.email === adminEmail
 }
 
+import { generateUserReferralCode } from './referral'
+
 // Crée plusieurs badges d'un coup
 export async function createBadges(count: number) {
   // Vérifier que l'utilisateur est admin
@@ -203,6 +205,17 @@ export async function activateBadge(code: string) {
       email: user.email,
       updated_at: new Date().toISOString(),
     })
+
+  // Générer un code de parrainage s'il n'en a pas
+  const { data: currentUser } = await supabase
+    .from('users')
+    .select('referral_code, first_name')
+    .eq('id', user.id)
+    .single()
+
+  if (!currentUser?.referral_code) {
+    await generateUserReferralCode(user.id, currentUser?.first_name || undefined)
+  }
 
   revalidatePath(`/b/${code}`)
   

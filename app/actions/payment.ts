@@ -1,6 +1,7 @@
 'use server'
 
 import { stripe } from '@/utils/stripe/server'
+import { createClient } from '@/utils/supabase/server'
 
 interface CheckoutSessionParams {
   amount: number // Montant en centimes
@@ -17,8 +18,29 @@ export async function createCheckoutSession({
     return { error: 'Stripe non configuré' }
   }
 
-  // Calculer la commission de 7%
-  const applicationFee = Math.round(amount * 0.07)
+  // 1. Vérifier si l'utilisateur bénéficie du 0% commission (parrainage)
+  const supabase = await createClient()
+  let commissionRate = 0.07 // 7% par défaut
+
+  const { data: userData } = await supabase
+    .from('users')
+    .select('referral_claimed_at')
+    .eq('id', userId)
+    .single()
+
+  if (userData?.referral_claimed_at) {
+    const claimedAt = new Date(userData.referral_claimed_at)
+    const thirtyDaysAgo = new Date()
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+
+    // Si le parrainage a été réclamé il y a moins de 30 jours
+    if (claimedAt > thirtyDaysAgo) {
+      commissionRate = 0
+    }
+  }
+
+  // Calculer la commission
+  const applicationFee = Math.round(amount * commissionRate)
 
   try {
     const session = await stripe.checkout.sessions.create({
