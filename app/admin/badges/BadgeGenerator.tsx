@@ -6,6 +6,7 @@ import { createBadges } from '@/app/actions/badges'
 interface GeneratedBadge {
   id: string
   code: string
+  referral_code: string
   url: string
 }
 
@@ -43,8 +44,8 @@ export default function BadgeGenerator() {
   }
 
   const downloadCSV = () => {
-    const header = 'Code,URL,Statut\n'
-    const rows = generatedBadges.map(b => `${b.code},${b.url},Non activé`).join('\n')
+    const header = 'Code Badge,Code Parrainage,URL,Statut\n'
+    const rows = generatedBadges.map(b => `${b.code},${b.referral_code},${b.url},Non activé`).join('\n')
     const csv = header + rows
     
     const blob = new Blob([csv], { type: 'text/csv' })
@@ -113,18 +114,27 @@ export default function BadgeGenerator() {
             {generatedBadges.map((badge, index) => (
               <div
                 key={badge.id}
-                className="flex items-center gap-2 bg-white rounded-lg p-3 border border-gray-100"
+                className="bg-white rounded-lg p-3 border border-gray-100"
               >
-                <span className="text-xs text-gray-400 w-6">{index + 1}.</span>
-                <code className="flex-1 text-xs text-gray-700 truncate">
-                  {badge.url}
-                </code>
-                <button
-                  onClick={() => copyToClipboard(badge.url, badge.code)}
-                  className="text-xs text-gray-500 hover:text-black px-2 py-1 rounded bg-gray-50 hover:bg-gray-100 transition-colors"
-                >
-                  {copied === badge.code ? '✓' : '📋'}
-                </button>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-gray-400 w-6">{index + 1}.</span>
+                  <code className="flex-1 text-xs text-gray-700 truncate">
+                    {badge.url}
+                  </code>
+                  <button
+                    onClick={() => copyToClipboard(badge.url, badge.code)}
+                    className="text-xs text-gray-500 hover:text-black px-2 py-1 rounded bg-gray-50 hover:bg-gray-100 transition-colors"
+                  >
+                    {copied === badge.code ? '✓' : '📋'}
+                  </button>
+                </div>
+                {/* Code parrainage */}
+                <div className="flex items-center gap-2 mt-2 ml-6">
+                  <span className="text-[10px] text-gray-400">🎁 Code parrain :</span>
+                  <code className="text-xs font-mono font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">
+                    {badge.referral_code}
+                  </code>
+                </div>
               </div>
             ))}
           </div>

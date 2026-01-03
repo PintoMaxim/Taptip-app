@@ -113,8 +113,8 @@ export default function BadgeList({ badges }: BadgeListProps) {
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
-                  {/* Code */}
-                  <div className="flex items-center gap-2">
+                  {/* Code Badge */}
+                  <div className="flex items-center gap-2 flex-wrap">
                     <code className="text-sm font-mono font-bold text-black">
                       {badge.code}
                     </code>
@@ -128,6 +128,16 @@ export default function BadgeList({ badges }: BadgeListProps) {
                       </span>
                     )}
                   </div>
+
+                  {/* Code Parrainage */}
+                  {badge.referral_code && (
+                    <div className="flex items-center gap-1.5 mt-1">
+                      <span className="text-xs text-gray-400">🎁 Code parrain :</span>
+                      <code className="text-xs font-mono font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">
+                        {badge.referral_code}
+                      </code>
+                    </div>
+                  )}
 
                   {/* Info utilisateur si activé */}
                   {badge.isActivated && badge.users && (
