@@ -28,6 +28,8 @@ export default async function SettingsPage() {
   const profile = profileResult.profile
   const referralCode = profile?.referral_code || ''
   const referralCount = referralData.stats?.totalCount || 0
+  const pendingAmount = referralData.stats?.pending || 0
+  const availableAmount = referralData.stats?.available || 0
 
   // Récupérer la date du premier badge activé pour le délai de 7 jours
   const { data: firstBadge } = await supabase
@@ -63,7 +65,12 @@ export default async function SettingsPage() {
             {/* Carte Parrain : SEULEMENT si Stripe est configuré */}
             {referralCode && stripeStatus.isComplete && (
               <div className="mb-3">
-                <ReferralCard referralCode={referralCode} referralCount={referralCount} />
+                <ReferralCard 
+                  referralCode={referralCode} 
+                  referralCount={referralCount}
+                  pendingAmount={pendingAmount}
+                  availableAmount={availableAmount}
+                />
               </div>
             )}
             

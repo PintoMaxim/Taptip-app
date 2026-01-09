@@ -1,14 +1,21 @@
 'use client'
 
 import { useState } from 'react'
-import { Copy, Check, Users, Gift } from 'lucide-react'
+import { Copy, Check, Users, Gift, Clock, Wallet } from 'lucide-react'
 
 interface ReferralCardProps {
   referralCode: string
   referralCount: number
+  pendingAmount?: number  // Montant en attente (en €)
+  availableAmount?: number  // Montant disponible (en €)
 }
 
-export default function ReferralCard({ referralCode, referralCount }: ReferralCardProps) {
+export default function ReferralCard({ 
+  referralCode, 
+  referralCount,
+  pendingAmount = 0,
+  availableAmount = 0
+}: ReferralCardProps) {
   const [copied, setCopied] = useState(false)
 
   // Message de partage avec le code
@@ -40,6 +47,8 @@ export default function ReferralCard({ referralCode, referralCount }: ReferralCa
     }
   }
 
+  const hasEarnings = pendingAmount > 0 || availableAmount > 0
+
   return (
     <div className="bg-gradient-to-br from-emerald-50 to-white border border-emerald-100 rounded-2xl p-5 relative overflow-hidden">
       {/* Petit badge décoratif */}
@@ -55,6 +64,29 @@ export default function ReferralCard({ referralCode, referralCount }: ReferralCa
             <p className="text-[10px] text-emerald-600 font-medium uppercase tracking-wider">Gagnez 10€ par collègue</p>
           </div>
         </div>
+
+        {/* Section Gains - Affichée seulement si il y a des gains */}
+        {hasEarnings && (
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            {/* En attente */}
+            <div className="bg-amber-50 border border-amber-100 rounded-xl p-3">
+              <div className="flex items-center gap-1.5 mb-1">
+                <Clock size={12} className="text-amber-500" />
+                <span className="text-[10px] text-amber-600 font-medium uppercase">En attente</span>
+              </div>
+              <p className="text-xl font-black text-amber-700">{pendingAmount}€</p>
+            </div>
+            
+            {/* Disponible */}
+            <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-3">
+              <div className="flex items-center gap-1.5 mb-1">
+                <Wallet size={12} className="text-emerald-500" />
+                <span className="text-[10px] text-emerald-600 font-medium uppercase">Disponible</span>
+              </div>
+              <p className="text-xl font-black text-emerald-700">{availableAmount}€</p>
+            </div>
+          </div>
+        )}
 
         <div className="flex items-center justify-between bg-white border border-emerald-100 rounded-xl p-3 mb-4">
           <div className="flex flex-col">
@@ -88,8 +120,12 @@ export default function ReferralCard({ referralCode, referralCount }: ReferralCa
             <Users size={14} className="text-emerald-500" />
             <span><strong>{referralCount}</strong> parrainage{referralCount > 1 ? 's' : ''}</span>
           </div>
-          <div className="w-1 h-1 rounded-full bg-emerald-200" />
-          <span>Gagnez <strong>10€</strong> par collègue parrainé !</span>
+          {!hasEarnings && (
+            <>
+              <div className="w-1 h-1 rounded-full bg-emerald-200" />
+              <span>Gagnez <strong>10€</strong> par collègue parrainé !</span>
+            </>
+          )}
         </div>
       </div>
     </div>
