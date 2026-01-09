@@ -63,29 +63,68 @@ export default function BadgeGenerator() {
         🎲 Générer des badges
       </h2>
 
-      {/* Input + Bouton */}
-      <div className="flex gap-3 mb-4">
-        <div className="flex-1">
-          <label className="text-xs text-gray-500 mb-1 block">
-            Nombre de badges
-          </label>
-          <input
-            type="number"
-            value={count}
-            onChange={(e) => setCount(Math.min(100, Math.max(1, parseInt(e.target.value) || 1)))}
-            min="1"
-            max="100"
-            className="w-full h-12 rounded-xl border-2 border-gray-200 px-4 text-lg font-medium text-center focus:border-black focus:outline-none"
-          />
+      {/* Sélecteur de quantité */}
+      <div className="bg-white rounded-xl border border-gray-200 p-4 mb-4">
+        <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-3">
+          Nombre de badges à générer
+        </p>
+        
+        <div className="flex items-center justify-center gap-4">
+          {/* Bouton moins */}
+          <button
+            onClick={() => setCount(Math.max(1, count - 1))}
+            className="w-12 h-12 rounded-full bg-gray-100 text-black text-xl font-bold active:bg-gray-200 active:scale-95 transition-all"
+          >
+            −
+          </button>
+          
+          {/* Nombre */}
+          <div className="w-20 text-center">
+            <input
+              type="number"
+              value={count}
+              onChange={(e) => setCount(Math.min(100, Math.max(1, parseInt(e.target.value) || 1)))}
+              min="1"
+              max="100"
+              className="w-full text-4xl font-black text-black text-center bg-transparent focus:outline-none"
+            />
+          </div>
+          
+          {/* Bouton plus */}
+          <button
+            onClick={() => setCount(Math.min(100, count + 1))}
+            className="w-12 h-12 rounded-full bg-gray-100 text-black text-xl font-bold active:bg-gray-200 active:scale-95 transition-all"
+          >
+            +
+          </button>
         </div>
-        <button
-          onClick={handleGenerate}
-          disabled={loading}
-          className="h-12 px-6 mt-5 rounded-xl bg-black text-white font-semibold transition-all hover:bg-gray-800 active:scale-[0.98] disabled:opacity-50"
-        >
-          {loading ? '...' : 'Générer'}
-        </button>
+
+        {/* Raccourcis */}
+        <div className="flex justify-center gap-2 mt-4">
+          {[1, 5, 10, 25, 50].map((n) => (
+            <button
+              key={n}
+              onClick={() => setCount(n)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                count === n 
+                  ? 'bg-black text-white' 
+                  : 'bg-gray-100 text-gray-600 active:bg-gray-200'
+              }`}
+            >
+              {n}
+            </button>
+          ))}
+        </div>
       </div>
+
+      {/* Bouton générer */}
+      <button
+        onClick={handleGenerate}
+        disabled={loading}
+        className="w-full h-12 rounded-xl bg-black text-white font-semibold transition-all active:scale-[0.98] disabled:opacity-50"
+      >
+        {loading ? 'Génération...' : `Générer ${count} badge${count > 1 ? 's' : ''}`}
+      </button>
 
       {/* Résultats */}
       {generatedBadges.length > 0 && (
