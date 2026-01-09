@@ -45,8 +45,8 @@ export async function createCheckoutSession({
   try {
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
-      // Ne pas spécifier payment_method_types pour activer automatiquement
-      // Apple Pay, Google Pay, et Link selon l'appareil du client
+      // Seulement Carte (inclut Apple Pay / Google Pay) + Link
+      payment_method_types: ['card', 'link'],
       line_items: [
         {
           price_data: {
