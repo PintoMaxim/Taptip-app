@@ -19,7 +19,7 @@ export default async function AdminReferralsPage() {
   }
 
   // Récupérer tous les parrainages avec les infos des utilisateurs
-  const { data: referrals, error } = await supabase
+  const { data: referrals } = await supabase
     .from('referrals')
     .select(`
       id,
@@ -55,74 +55,86 @@ export default async function AdminReferralsPage() {
   })) || []
 
   // Stats
-  const stats = {
-    total: enrichedReferrals.length,
-    pending: enrichedReferrals.filter(r => r.status === 'pending').length,
-    paid: enrichedReferrals.filter(r => r.status === 'paid').length,
-    totalAmount: enrichedReferrals.reduce((acc, r) => acc + (r.amount || 0), 0) / 100,
-    paidAmount: enrichedReferrals.filter(r => r.status === 'paid').reduce((acc, r) => acc + (r.amount || 0), 0) / 100,
-  }
+  const pendingReferrals = enrichedReferrals.filter(r => r.status === 'pending')
+  const paidReferrals = enrichedReferrals.filter(r => r.status === 'paid')
+  const pendingAmount = pendingReferrals.reduce((acc, r) => acc + (r.amount || 0), 0) / 100
+  const paidAmount = paidReferrals.reduce((acc, r) => acc + (r.amount || 0), 0) / 100
 
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center">
-      <div className="w-full max-w-[500px] min-h-screen bg-white">
+    <div className="min-h-screen bg-white flex justify-center">
+      {/* Container mobile fixe */}
+      <div className="w-full max-w-[390px] min-h-screen bg-white">
         {/* Header */}
-        <header className="px-5 py-4 flex items-center justify-between border-b border-gray-100">
-          <div className="flex items-center gap-3">
-            <Image
-              src="/logo.png"
-              alt="Logo"
-              width={28}
-              height={28}
-            />
-            <h1 className="text-base font-semibold text-black">Gestion Parrainages</h1>
-          </div>
+        <header className="px-5 py-4 flex items-center gap-3 border-b border-gray-100">
           <Link 
             href="/admin/badges"
-            className="text-xs text-gray-500 hover:text-black"
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 active:bg-gray-200"
           >
-            ← Badges
+            <span className="text-sm">←</span>
           </Link>
+          <div className="flex-1">
+            <h1 className="text-base font-semibold text-black">Parrainages</h1>
+            <p className="text-[10px] text-gray-400">Gestion des bonus</p>
+          </div>
+          <Image
+            src="/logo.png"
+            alt="Logo"
+            width={28}
+            height={28}
+          />
         </header>
 
         <main className="px-5 py-5 space-y-5">
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-3">
-            <div className="bg-amber-50 border border-amber-100 rounded-xl p-3 text-center">
-              <p className="text-2xl font-black text-amber-600">{stats.pending}</p>
-              <p className="text-[10px] text-amber-600 uppercase font-medium">En attente</p>
-            </div>
-            <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-3 text-center">
-              <p className="text-2xl font-black text-emerald-600">{stats.paid}</p>
-              <p className="text-[10px] text-emerald-600 uppercase font-medium">Payés</p>
-            </div>
-            <div className="bg-gray-50 border border-gray-100 rounded-xl p-3 text-center">
-              <p className="text-2xl font-black text-gray-700">{stats.totalAmount}€</p>
-              <p className="text-[10px] text-gray-500 uppercase font-medium">Total</p>
+          {/* Carte principale - Solde à payer */}
+          <div className="bg-black rounded-2xl p-5 text-white">
+            <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">À payer</p>
+            <p className="text-4xl font-black mb-4">{pendingAmount}€</p>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-gray-400">{pendingReferrals.length} parrainage{pendingReferrals.length > 1 ? 's' : ''} en attente</span>
+              <a 
+                href="https://dashboard.stripe.com/balance"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white underline"
+              >
+                Voir solde Stripe →
+              </a>
             </div>
           </div>
 
-          {/* Info solde */}
-          <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
-            <p className="text-xs text-blue-800">
-              <strong>💡 Rappel :</strong> Assurez-vous d'avoir suffisamment de solde sur votre compte Stripe avant de payer les parrains.
-            </p>
+          {/* Stats secondaires */}
+          <div className="flex gap-3">
+            <div className="flex-1 bg-gray-50 rounded-xl p-4">
+              <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Payés</p>
+              <p className="text-2xl font-black text-black">{paidAmount}€</p>
+              <p className="text-[10px] text-gray-400">{paidReferrals.length} parrainage{paidReferrals.length > 1 ? 's' : ''}</p>
+            </div>
+            <div className="flex-1 bg-gray-50 rounded-xl p-4">
+              <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Total</p>
+              <p className="text-2xl font-black text-black">{pendingAmount + paidAmount}€</p>
+              <p className="text-[10px] text-gray-400">{enrichedReferrals.length} parrainage{enrichedReferrals.length > 1 ? 's' : ''}</p>
+            </div>
           </div>
 
           {/* Liste des parrainages */}
           <section>
             <h2 className="text-[10px] text-gray-400 uppercase tracking-wider mb-3 ml-1">
-              Parrainages ({stats.total})
+              Historique
             </h2>
             
             {enrichedReferrals.length === 0 ? (
-              <div className="bg-gray-50 rounded-xl p-8 text-center">
-                <p className="text-gray-400 text-sm">Aucun parrainage pour le moment</p>
+              <div className="bg-gray-50 rounded-2xl p-10 text-center">
+                <p className="text-3xl mb-2">🎁</p>
+                <p className="text-sm text-gray-500">Aucun parrainage</p>
+                <p className="text-[10px] text-gray-400 mt-1">Les parrainages apparaîtront ici</p>
               </div>
             ) : (
               <ReferralList referrals={enrichedReferrals} />
             )}
           </section>
+
+          {/* Espace en bas */}
+          <div className="h-10" />
         </main>
       </div>
     </div>

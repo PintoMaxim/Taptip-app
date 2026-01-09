@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { payReferrer } from '@/app/actions/stripe'
-import { Clock, CheckCircle, Loader2, AlertCircle } from 'lucide-react'
 
 interface Referral {
   id: string
@@ -56,26 +55,33 @@ export default function ReferralList({ referrals }: ReferralListProps) {
     return new Date(date).toLocaleDateString('fr-FR', {
       day: 'numeric',
       month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
     })
   }
 
   const getUserName = (user?: { first_name?: string; last_name?: string; email?: string }) => {
-    if (!user) return 'Utilisateur inconnu'
+    if (!user) return '?'
     if (user.first_name || user.last_name) {
       return `${user.first_name || ''} ${user.last_name || ''}`.trim()
     }
-    return user.email || 'Utilisateur inconnu'
+    return user.email?.split('@')[0] || '?'
+  }
+
+  const getInitials = (user?: { first_name?: string; last_name?: string; email?: string }) => {
+    if (!user) return '?'
+    if (user.first_name) {
+      return user.first_name.charAt(0).toUpperCase()
+    }
+    if (user.email) {
+      return user.email.charAt(0).toUpperCase()
+    }
+    return '?'
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center gap-2">
-          <AlertCircle size={16} className="text-red-500" />
-          <p className="text-xs text-red-700">{error}</p>
+        <div className="bg-red-50 rounded-xl p-3 mb-3">
+          <p className="text-xs text-red-600 text-center">{error}</p>
         </div>
       )}
 
@@ -88,91 +94,57 @@ export default function ReferralList({ referrals }: ReferralListProps) {
         return (
           <div
             key={referral.id}
-            className={`border rounded-xl p-4 ${
-              isPending 
-                ? 'bg-amber-50 border-amber-200' 
-                : 'bg-gray-50 border-gray-100'
-            }`}
+            className="bg-gray-50 rounded-xl p-4"
           >
-            {/* Header */}
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex items-center gap-2">
-                {isPending ? (
-                  <Clock size={16} className="text-amber-500" />
+            {/* Ligne principale */}
+            <div className="flex items-center gap-3">
+              {/* Avatar parrain */}
+              <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center text-white font-bold text-sm">
+                {getInitials(referral.referrer)}
+              </div>
+
+              {/* Infos */}
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-black truncate">
+                  {getUserName(referral.referrer)}
+                </p>
+                <p className="text-[10px] text-gray-400">
+                  Parrainé par {getUserName(referral.referee)} · {formatDate(referral.created_at)}
+                </p>
+              </div>
+
+              {/* Montant + Statut */}
+              <div className="text-right">
+                <p className="text-base font-bold text-black">
+                  {(referral.amount / 100).toFixed(0)}€
+                </p>
+                {isPaid ? (
+                  <span className="text-[10px] text-emerald-600 font-medium">Payé ✓</span>
                 ) : (
-                  <CheckCircle size={16} className="text-emerald-500" />
+                  <span className="text-[10px] text-amber-600 font-medium">En attente</span>
                 )}
-                <span className={`text-xs font-bold uppercase ${
-                  isPending ? 'text-amber-600' : 'text-emerald-600'
-                }`}>
-                  {isPending ? 'En attente' : 'Payé'}
-                </span>
-              </div>
-              <span className="text-xl font-black text-black">
-                {(referral.amount / 100).toFixed(0)}€
-              </span>
-            </div>
-
-            {/* Détails */}
-            <div className="space-y-2 mb-3">
-              <div>
-                <p className="text-[10px] text-gray-400 uppercase">Parrain (reçoit les 10€)</p>
-                <p className="text-sm font-medium text-black">{getUserName(referral.referrer)}</p>
-                <p className="text-[10px] text-gray-400">{referral.referrer?.email}</p>
-              </div>
-              <div>
-                <p className="text-[10px] text-gray-400 uppercase">Filleul (a utilisé le code)</p>
-                <p className="text-sm font-medium text-black">{getUserName(referral.referee)}</p>
-                <p className="text-[10px] text-gray-400">{referral.referee?.email}</p>
               </div>
             </div>
 
-            {/* Date */}
-            <p className="text-[10px] text-gray-400 mb-3">
-              {isPaid && referral.paid_at 
-                ? `Payé le ${formatDate(referral.paid_at)}`
-                : `Créé le ${formatDate(referral.created_at)}`
-              }
-            </p>
-
-            {/* Bouton payer */}
+            {/* Bouton payer - seulement si en attente */}
             {isPending && (
-              <>
+              <div className="mt-3 pt-3 border-t border-gray-100">
                 {!hasStripeAccount ? (
-                  <div className="bg-red-100 border border-red-200 rounded-lg p-2">
-                    <p className="text-[10px] text-red-600 text-center">
-                      ⚠️ Le parrain n'a pas de compte Stripe
-                    </p>
-                  </div>
+                  <p className="text-[10px] text-red-500 text-center">
+                    Stripe non configuré pour ce parrain
+                  </p>
                 ) : (
                   <button
                     onClick={() => handlePay(referral.id)}
                     disabled={isLoading}
-                    className="w-full bg-emerald-500 text-white font-bold text-sm py-3 rounded-xl 
-                             hover:bg-emerald-600 active:scale-[0.98] transition-all
-                             disabled:opacity-50 disabled:cursor-not-allowed
-                             flex items-center justify-center gap-2"
+                    className="w-full bg-black text-white font-medium text-sm py-2.5 rounded-xl 
+                             active:scale-[0.98] transition-all
+                             disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {isLoading ? (
-                      <>
-                        <Loader2 size={16} className="animate-spin" />
-                        Paiement en cours...
-                      </>
-                    ) : (
-                      <>
-                        💰 Valider & Payer 10€
-                      </>
-                    )}
+                    {isLoading ? 'Paiement...' : 'Payer 10€'}
                   </button>
                 )}
-              </>
-            )}
-
-            {/* Transfer ID si payé */}
-            {isPaid && referral.stripe_transfer_id && (
-              <p className="text-[10px] text-gray-400 text-center">
-                Transfer: {referral.stripe_transfer_id}
-              </p>
+              </div>
             )}
           </div>
         )

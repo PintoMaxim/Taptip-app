@@ -27,41 +27,43 @@ export default async function AdminBadgesPage() {
   ])
 
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center">
-      <div className="w-full max-w-[600px] min-h-screen bg-white">
+    <div className="min-h-screen bg-white flex justify-center">
+      {/* Container mobile fixe */}
+      <div className="w-full max-w-[390px] min-h-screen bg-white">
         {/* Header */}
-        <header className="px-5 py-4 flex items-center justify-between border-b border-gray-100 sticky top-0 bg-white z-10">
-          <div className="flex items-center gap-3">
+        <header className="px-5 py-4 flex items-center gap-3 border-b border-gray-100">
           <Link 
-            href="/dashboard"
-              className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+            href="/dashboard/settings"
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 active:bg-gray-200"
           >
-              <span className="text-sm">←</span>
+            <span className="text-sm">←</span>
           </Link>
-            <h1 className="text-lg font-bold text-black">🏷️ Gestion des Badges</h1>
+          <div className="flex-1">
+            <h1 className="text-base font-semibold text-black">Badges</h1>
+            <p className="text-[10px] text-gray-400">Génération et suivi</p>
           </div>
           <Link 
             href="/admin/referrals"
-            className="text-xs bg-emerald-100 text-emerald-800 px-2 py-1 rounded-full font-medium hover:bg-emerald-200"
+            className="px-3 py-1.5 bg-black text-white text-xs font-medium rounded-lg active:scale-95"
           >
-            💰 Parrainages
+            Parrainages
           </Link>
         </header>
 
-        <main className="px-5 py-5 space-y-6">
+        <main className="px-5 py-5 space-y-5">
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-3">
-            <div className="bg-gray-50 rounded-xl p-4 text-center">
-              <p className="text-2xl font-bold text-black">{stats.total}</p>
-              <p className="text-xs text-gray-500">Total</p>
+          <div className="flex gap-3">
+            <div className="flex-1 bg-gray-50 rounded-xl p-4">
+              <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Total</p>
+              <p className="text-2xl font-black text-black">{stats.total}</p>
             </div>
-            <div className="bg-green-50 rounded-xl p-4 text-center">
-              <p className="text-2xl font-bold text-green-600">{stats.activated}</p>
-              <p className="text-xs text-gray-500">Activés</p>
+            <div className="flex-1 bg-gray-50 rounded-xl p-4">
+              <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Activés</p>
+              <p className="text-2xl font-black text-black">{stats.activated}</p>
             </div>
-            <div className="bg-blue-50 rounded-xl p-4 text-center">
-              <p className="text-2xl font-bold text-blue-600">{stats.available}</p>
-              <p className="text-xs text-gray-500">Disponibles</p>
+            <div className="flex-1 bg-gray-50 rounded-xl p-4">
+              <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Dispo</p>
+              <p className="text-2xl font-black text-black">{stats.available}</p>
             </div>
           </div>
 
@@ -70,6 +72,9 @@ export default async function AdminBadgesPage() {
 
           {/* Liste des badges */}
           <BadgeList badges={badges || []} />
+
+          {/* Espace en bas */}
+          <div className="h-10" />
         </main>
       </div>
     </div>
