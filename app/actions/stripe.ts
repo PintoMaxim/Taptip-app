@@ -86,6 +86,86 @@ export async function getStripeOnboardingLink() {
   }
 }
 
+// Payer un parrain (Transfer Stripe Connect)
+export async function payReferrer(referralId: string) {
+  if (!isStripeConfigured() || !stripe) {
+    return { error: 'Stripe non configuré' }
+  }
+
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: 'Non authentifié' }
+  }
+
+  // Vérifier que c'est un admin
+  const adminEmail = process.env.ADMIN_EMAIL || 'contact.taptip@gmail.com'
+  if (user.email !== adminEmail) {
+    return { error: 'Accès non autorisé' }
+  }
+
+  // Récupérer le parrainage
+  const { data: referral, error: refError } = await supabase
+    .from('referrals')
+    .select(`
+      id,
+      referrer_id,
+      status,
+      amount
+    `)
+    .eq('id', referralId)
+    .single()
+
+  if (refError || !referral) {
+    return { error: 'Parrainage introuvable' }
+  }
+
+  if (referral.status !== 'pending') {
+    return { error: 'Ce parrainage a déjà été traité' }
+  }
+
+  // Récupérer le compte Stripe du parrain
+  const { data: referrer, error: userError } = await supabase
+    .from('users')
+    .select('stripe_account_id, first_name, last_name')
+    .eq('id', referral.referrer_id)
+    .single()
+
+  if (userError || !referrer?.stripe_account_id) {
+    return { error: 'Le parrain n\'a pas de compte Stripe configuré' }
+  }
+
+  try {
+    // Créer le transfert Stripe (10€ = 1000 centimes)
+    const transfer = await stripe.transfers.create({
+      amount: referral.amount, // En centimes (1000 = 10€)
+      currency: 'eur',
+      destination: referrer.stripe_account_id,
+      description: `Bonus parrainage TapTip`,
+      metadata: {
+        referral_id: referralId,
+        referrer_id: referral.referrer_id,
+      },
+    })
+
+    // Mettre à jour le statut du parrainage
+    await supabase
+      .from('referrals')
+      .update({
+        status: 'paid',
+        stripe_transfer_id: transfer.id,
+        paid_at: new Date().toISOString()
+      })
+      .eq('id', referralId)
+
+    return { success: true, transferId: transfer.id }
+  } catch (err) {
+    console.error('Erreur transfert Stripe:', err)
+    return { error: 'Erreur lors du transfert Stripe. Vérifiez votre solde.' }
+  }
+}
+
 // Vérifie le statut d'onboarding Stripe
 export async function checkStripeStatus() {
   if (!isStripeConfigured() || !stripe) {

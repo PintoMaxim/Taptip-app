@@ -40,9 +40,12 @@ export default async function AdminBadgesPage() {
           </Link>
             <h1 className="text-lg font-bold text-black">🏷️ Gestion des Badges</h1>
           </div>
-          <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full font-medium">
-            ADMIN
-          </span>
+          <Link 
+            href="/admin/referrals"
+            className="text-xs bg-emerald-100 text-emerald-800 px-2 py-1 rounded-full font-medium hover:bg-emerald-200"
+          >
+            💰 Parrainages
+          </Link>
         </header>
 
         <main className="px-5 py-5 space-y-6">
