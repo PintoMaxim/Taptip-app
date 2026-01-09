@@ -4,6 +4,7 @@ import { getAllBadges, getBadgeStats } from '@/app/actions/badges'
 import BadgeGenerator from './BadgeGenerator'
 import BadgeList from './BadgeList'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default async function AdminBadgesPage() {
   const supabase = await createClient()
@@ -32,11 +33,14 @@ export default async function AdminBadgesPage() {
       <div className="w-full max-w-[390px] min-h-screen bg-white">
         {/* Header */}
         <header className="px-5 py-4 flex items-center gap-3 border-b border-gray-100">
-          <Link 
-            href="/dashboard/settings"
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 active:bg-gray-200"
-          >
-            <span className="text-sm">←</span>
+          <Link href="/dashboard/settings">
+            <Image
+              src="/logo.png"
+              alt="TapTip"
+              width={32}
+              height={32}
+              className="rounded-lg"
+            />
           </Link>
           <div className="flex-1">
             <h1 className="text-base font-semibold text-black">Badges</h1>
