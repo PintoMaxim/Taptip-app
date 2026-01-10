@@ -152,20 +152,22 @@ export async function uploadAvatar(formData: FormData) {
     return { error: 'Erreur lors de l\'upload' }
   }
 
-  // Récupérer l'URL publique
+  // Récupérer l'URL publique avec timestamp pour éviter le cache
   const { data: { publicUrl } } = supabase.storage
     .from('avatars')
     .getPublicUrl(fileName)
 
-  // Mettre à jour le profil avec l'URL de l'avatar
+  // Ajouter un timestamp à l'URL pour forcer le rafraîchissement du cache
+  const avatarUrlWithCache = `${publicUrl}?v=${Date.now()}`
+
+  // Mettre à jour SEULEMENT l'avatar_url (pas upsert qui écrase tout)
   const { error: updateError } = await supabase
     .from('users')
-    .upsert({
-      id: user.id,
-      email: user.email,
-      avatar_url: publicUrl,
+    .update({
+      avatar_url: avatarUrlWithCache,
       updated_at: new Date().toISOString(),
     })
+    .eq('id', user.id)
 
   if (updateError) {
     console.error('Erreur mise à jour avatar_url:', updateError)
@@ -173,8 +175,9 @@ export async function uploadAvatar(formData: FormData) {
   }
 
   revalidatePath('/dashboard')
+  revalidatePath('/dashboard/profile')
   revalidatePath(`/p/${user.id}`)
 
-  return { success: true, url: publicUrl }
+  return { success: true, url: avatarUrlWithCache }
 }
 
