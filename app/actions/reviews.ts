@@ -59,3 +59,23 @@ export async function getReviewStats(userId: string) {
   return { average, count: reviews.length }
 }
 
+// Récupérer les derniers avis
+export async function getLatestReviews(userId: string, limit = 3) {
+  const supabase = await createClient()
+
+  const { data: reviews, error } = await supabase
+    .from('reviews')
+    .select('id, rating, comment, created_at')
+    .eq('user_id', userId)
+    .not('comment', 'is', null)
+    .order('created_at', { ascending: false })
+    .limit(limit)
+
+  if (error) {
+    console.error('Erreur récupération avis:', error)
+    return []
+  }
+
+  return reviews
+}
+

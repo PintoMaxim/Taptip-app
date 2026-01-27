@@ -1,6 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
 import { notFound } from 'next/navigation'
-import { getReviewStats } from '@/app/actions/reviews'
+import { getReviewStats, getLatestReviews } from '@/app/actions/reviews'
 import TipButtons from './TipButtons'
 import ReviewSection from './ReviewSection'
 import SuccessAnimation from './SuccessAnimation'
@@ -28,8 +28,11 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
     notFound()
   }
 
-  // Récupérer les stats des avis
-  const reviewStats = await getReviewStats(userId)
+  // Récupérer les stats et les derniers avis
+  const [reviewStats, latestReviews] = await Promise.all([
+    getReviewStats(userId),
+    getLatestReviews(userId, 3)
+  ])
 
   // Construire le nom d'affichage
   const displayName = userData.first_name && userData.last_name 
@@ -125,7 +128,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
         </div>
 
         {/* Section Avis */}
-        <ReviewSection userId={userId} />
+        <ReviewSection userId={userId} latestReviews={latestReviews} />
       </main>
 
       {/* Footer */}
