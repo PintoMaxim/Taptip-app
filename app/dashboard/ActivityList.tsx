@@ -53,11 +53,12 @@ export default function ActivityList({ activities }: ActivityListProps) {
   }
 
   return (
-    <div className="space-y-2 stagger-children">
-      {activities.map((activity) => (
+    <div className="space-y-2">
+      {activities.map((activity, index) => (
         <div
           key={activity.id}
-          className="flex items-center gap-3 p-3 bg-gray-50/50 rounded-xl hover:bg-gray-100/50 transition-colors cursor-default"
+          className="flex items-center gap-3 p-3 bg-gray-50/50 rounded-xl hover:bg-gray-100/50 transition-colors cursor-default animate-fade-in-up"
+          style={{ animationDelay: `${Math.min(index * 0.05, 0.4)}s` }}
         >
           <div className={`w-9 h-9 rounded-full flex items-center justify-center ${
             activity.type === 'tip' ? 'bg-white border-2 border-emerald-500' : 'bg-gray-100'

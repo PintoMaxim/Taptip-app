@@ -61,9 +61,9 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex justify-center">
+    <div className="min-h-[100dvh] bg-white flex justify-center">
       {/* Container mobile fixe */}
-      <div className="w-full max-w-[390px] min-h-screen bg-white">
+      <div className="w-full max-w-[390px] min-h-[100dvh] bg-white flex flex-col relative">
         <PullToRefresh>
         {/* Header */}
         <header className="px-5 py-4 flex items-center justify-between border-b border-gray-100 sticky top-0 bg-white z-10">

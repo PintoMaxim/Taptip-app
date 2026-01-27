@@ -40,7 +40,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
   const initial = userData.first_name?.[0]?.toUpperCase() || userData.email?.[0]?.toUpperCase() || '?'
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-[100dvh] bg-white flex flex-col">
       {/* Animation de succès avec confettis */}
       {success && <SuccessAnimation />}
 
@@ -52,9 +52,9 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
       )}
 
       {/* Contenu principal */}
-      <main className="flex-1 flex flex-col items-center px-5 pt-12 pb-8">
+      <main className="flex-1 flex flex-col items-center px-5 pt-8 pb-8">
         {/* Carte Profil avec animation */}
-        <div className="w-full max-w-[380px] bg-white rounded-3xl shadow-[0_4px_40px_rgba(0,0,0,0.12)] p-6 mb-6 animate-fade-in-up">
+        <div className="w-full max-w-[380px] bg-white rounded-3xl shadow-[0_4px_40px_rgba(0,0,0,0.08)] p-6 mb-6 animate-fade-in-up border border-gray-50">
         {/* Avatar */}
           <div className="flex justify-center">
             <div className="relative">

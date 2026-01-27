@@ -22,22 +22,31 @@ export default function PullToRefresh({ children }: PullToRefreshProps) {
     if (!container) return
 
     const handleTouchStart = (e: TouchEvent) => {
-      if (container.scrollTop === 0) {
-        startY.current = e.touches[0].clientY
+      startY.current = e.touches[0].clientY
+      if (container.scrollTop <= 0) {
         setPulling(true)
+      } else {
+        setPulling(false)
       }
     }
 
     const handleTouchMove = (e: TouchEvent) => {
-      if (!pulling || refreshing) return
-
       const currentY = e.touches[0].clientY
-      const distance = Math.max(0, currentY - startY.current)
+      const distance = currentY - startY.current
       
-      if (distance > 0 && container.scrollTop === 0) {
-        e.preventDefault()
-        // Effet de résistance
-        setPullDistance(Math.min(distance * 0.5, 120))
+      // Si on scrolle vers le HAUT ou qu'on n'est pas au sommet, on désactive tout
+      if (distance <= 0 || container.scrollTop > 0) {
+        if (pulling) {
+          setPulling(false)
+          setPullDistance(0)
+        }
+        return
+      }
+
+      // Si on tire vers le bas au sommet
+      if (pulling && !refreshing) {
+        if (e.cancelable) e.preventDefault()
+        setPullDistance(Math.min(distance * 0.4, 80))
       }
     }
 
@@ -73,8 +82,10 @@ export default function PullToRefresh({ children }: PullToRefreshProps) {
   return (
     <div 
       ref={containerRef}
-      className="min-h-screen overflow-y-auto"
-      style={{ overscrollBehavior: 'none' }}
+      className="min-h-[100dvh] overflow-y-auto"
+      style={{ 
+        WebkitOverflowScrolling: 'touch'
+      }}
     >
       {/* Indicateur de pull */}
       <div 
@@ -93,9 +104,10 @@ export default function PullToRefresh({ children }: PullToRefreshProps) {
 
       {/* Contenu */}
       <div
+        className="will-change-transform"
         style={{
-          transform: `translateY(${pulling && !refreshing ? 0 : 0}px)`,
-          transition: pulling ? 'none' : 'transform 0.2s ease',
+          transform: `translateY(${pullDistance * 0.5}px)`,
+          transition: pulling ? 'none' : 'transform 0.4s cubic-bezier(0.2, 0, 0, 1)',
         }}
       >
         {children}
