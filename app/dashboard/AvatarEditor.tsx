@@ -17,16 +17,20 @@ function centerAspectCrop(
   mediaHeight: number,
   aspect: number,
 ) {
+  // On définit une taille fixe (80% de la plus petite dimension) pour le cercle
+  const size = Math.min(mediaWidth, mediaHeight) * 0.8;
+  const widthPercent = (size / mediaWidth) * 100;
+  
   return centerCrop(
     makeAspectCrop(
       {
         unit: '%',
-        width: 90,
+        width: widthPercent,
       },
       aspect,
       mediaWidth,
       mediaHeight,
-    ),
+      ),
     mediaWidth,
     mediaHeight,
   )
@@ -226,10 +230,19 @@ export default function AvatarEditor({
             {imgSrc && (
               <ReactCrop
                 crop={crop}
-                onChange={(_, percentCrop) => setCrop(percentCrop)}
+                onChange={(_, percentCrop) => {
+                  // On ne met à jour que la position (x, y), pas la taille (width, height)
+                  // pour garder le cercle fixe (Style Instagram)
+                  setCrop({
+                    ...percentCrop,
+                    width: crop?.width || percentCrop.width,
+                    height: crop?.height || percentCrop.height,
+                  })
+                }}
                 onComplete={(c) => setCompletedCrop(c)}
                 aspect={1}
                 circularCrop
+                locked // Verrouille la taille du cercle pour qu'il soit fixe
                 className="max-h-full"
               >
                 <img

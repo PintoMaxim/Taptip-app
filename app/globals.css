@@ -57,31 +57,52 @@ img {
   will-change: transform;
 }
 
-/* React Image Crop - Style cercle */
+/* React Image Crop - Style Instagram Premium */
 .ReactCrop {
   position: relative;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
 }
 
 .ReactCrop__crop-selection {
-  border: 3px solid white !important;
-  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7) !important;
+  border: 2px solid rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6) !important;
+  cursor: grab;
+}
+
+.ReactCrop__crop-selection:active {
+  cursor: grabbing;
 }
 
 .ReactCrop--circular-crop .ReactCrop__crop-selection {
   border-radius: 50% !important;
 }
 
+/* Désactivation des poignées de redimensionnement pour fixer la taille (Style Instagram) */
 .ReactCrop__drag-handle {
   display: none !important;
 }
 
-.ReactCrop--circular-crop .ReactCrop__crop-selection::after {
+/* Grille de composition (optionnelle mais pro) */
+.ReactCrop__crop-selection::before {
   content: '';
   position: absolute;
-  inset: -3px;
-  border: 3px solid white;
-  border-radius: 50%;
-  pointer-events: none;
+  top: 0;
+  left: 33.33%;
+  width: 1px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.ReactCrop__crop-selection::after {
+  content: '';
+  position: absolute;
+  top: 33.33%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* ===== ANIMATIONS PREMIUM ===== */
