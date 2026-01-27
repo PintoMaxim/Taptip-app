@@ -32,16 +32,20 @@ export default function PullToRefresh({ children }: PullToRefreshProps) {
     }
 
     const handleTouchMove = (e: TouchEvent) => {
+      if (refreshing) return
+
       const currentY = e.touches[0].clientY
       const distance = currentY - startY.current
       
-      // Si on n'est pas en train de "puller" ou si on scrolle vers le haut, on laisse le scroll natif
-      if (!pulling || refreshing || distance <= 0) {
+      // Si on n'est pas au sommet ou qu'on remonte, on ne fait RIEN du tout
+      // On laisse le navigateur gérer le scroll nativement
+      if (container.scrollTop > 0 || distance <= 0) {
+        if (pulling) setPulling(false)
         return
       }
 
-      // Si on est au sommet et qu'on tire vers le bas
-      if (container.scrollTop <= 0) {
+      // Uniquement si on tire vers le bas au sommet
+      if (pulling) {
         if (e.cancelable) e.preventDefault()
         setPullDistance(Math.min(distance * 0.4, 80))
       }
@@ -82,7 +86,8 @@ export default function PullToRefresh({ children }: PullToRefreshProps) {
       className="min-h-[100dvh] overflow-y-auto"
       style={{ 
         WebkitOverflowScrolling: 'touch',
-        overscrollBehaviorY: 'auto'
+        overscrollBehaviorY: 'auto',
+        scrollBehavior: 'auto' // Désactivation du smooth scroll qui peut créer de la latence sur mobile
       }}
     >
       {/* Indicateur de pull */}
