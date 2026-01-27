@@ -2,9 +2,6 @@ import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { checkStripeStatus } from '@/app/actions/stripe'
 import { getProfile } from '@/app/actions/profile'
-import { getReferralStats } from '@/app/actions/referral'
-import ReferralClaim from './ReferralClaim'
-import ReferralCard from '../ReferralCard'
 import StripeConnectButton from '../StripeConnectButton'
 import LogoutButton from '../LogoutButton'
 import BottomNav from '../BottomNav'
@@ -19,17 +16,13 @@ export default async function SettingsPage() {
     redirect('/login')
   }
 
-  const [stripeStatus, profileResult, referralData] = await Promise.all([
+  const [stripeStatus, profileResult] = await Promise.all([
     checkStripeStatus(),
-    getProfile(),
-    getReferralStats()
+    getProfile()
   ])
 
   const profile = profileResult.profile
   const referralCode = profile?.referral_code || ''
-  const referralCount = referralData.stats?.totalCount || 0
-  const pendingAmount = referralData.stats?.pending || 0
-  const availableAmount = referralData.stats?.available || 0
 
   // Récupérer la date du premier badge activé pour le délai de 7 jours
   const { data: firstBadge } = await supabase
@@ -56,32 +49,6 @@ export default async function SettingsPage() {
         </header>
 
         <main className="px-5 py-5 space-y-5">
-          {/* Section Parrainage */}
-          <section>
-            <h2 className="text-[10px] text-gray-400 uppercase tracking-wider mb-2 ml-1">
-              Parrainage
-            </h2>
-            
-            {/* Carte Parrain : SEULEMENT si Stripe est configuré */}
-            {referralCode && stripeStatus.isComplete && (
-              <div className="mb-3">
-                <ReferralCard 
-                  referralCode={referralCode} 
-                  referralCount={referralCount}
-                  pendingAmount={pendingAmount}
-                  availableAmount={availableAmount}
-                />
-              </div>
-            )}
-            
-            {/* Formulaire Filleul (avec cadenas si Stripe pas configuré) */}
-            <ReferralClaim 
-              isStripeComplete={stripeStatus.isComplete}
-              hasAlreadyClaimed={!!profile?.referred_by}
-              firstBadgeActivationDate={firstBadge?.activated_at}
-            />
-          </section>
-
           {/* Section Paiements */}
           <section>
             <h2 className="text-[10px] text-gray-400 uppercase tracking-wider mb-2 ml-1">
