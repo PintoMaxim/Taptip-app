@@ -180,14 +180,7 @@ export default async function DashboardPage() {
 
           {/* Activité */}
           <section>
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-base font-bold text-black">Activité récente</h2>
-              {activities.length > 0 && (
-                <button className="text-xs text-gray-400">Tout voir</button>
-              )}
-            </div>
-            
-            <ActivityList activities={activities} />
+            <ActivityList activities={activities} initialLimit={5} />
           </section>
 
           {/* Espace pour la barre de navigation */}

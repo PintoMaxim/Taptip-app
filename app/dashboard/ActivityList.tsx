@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+
 interface ActivityItem {
   id: string
   type: 'tip' | 'review'
@@ -11,6 +13,7 @@ interface ActivityItem {
 
 interface ActivityListProps {
   activities: ActivityItem[]
+  initialLimit?: number
 }
 
 function formatDate(dateStr: string) {
@@ -37,7 +40,9 @@ function formatAmount(amount: number) {
   }).format(amount)
 }
 
-export default function ActivityList({ activities }: ActivityListProps) {
+export default function ActivityList({ activities, initialLimit }: ActivityListProps) {
+  const [showAll, setShowAll] = useState(!initialLimit)
+
   if (activities.length === 0) {
     return (
       <div className="text-center py-10 bg-gray-50 rounded-xl">
@@ -52,50 +57,66 @@ export default function ActivityList({ activities }: ActivityListProps) {
     )
   }
 
+  const displayedActivities = showAll ? activities : activities.slice(0, initialLimit)
+
   return (
-    <div className="space-y-2">
-      {activities.map((activity, index) => (
-        <div
-          key={activity.id}
-          className="flex items-center gap-3 p-3 bg-gray-50/50 rounded-xl hover:bg-gray-100/50 transition-colors cursor-default animate-fade-in-up"
-          style={{ animationDelay: `${Math.min(index * 0.05, 0.4)}s` }}
-        >
-          <div className={`w-9 h-9 rounded-full flex items-center justify-center ${
-            activity.type === 'tip' ? 'bg-white border-2 border-emerald-500' : 'bg-gray-100'
-          }`}>
-            <span className={`text-sm font-semibold ${activity.type === 'tip' ? 'text-emerald-500' : 'text-amber-400'}`}>
-              {activity.type === 'tip' ? '€' : '★'}
-            </span>
-          </div>
+    <div className="space-y-3">
+      <div className="flex items-center justify-between mb-1 px-1">
+        <h2 className="text-base font-bold text-black">Activité récente</h2>
+        {initialLimit && activities.length > initialLimit && (
+          <button 
+            onClick={() => setShowAll(!showAll)}
+            className="text-[10px] font-bold text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full active:scale-95 transition-all"
+          >
+            {showAll ? 'Réduire' : 'Tout voir'}
+          </button>
+        )}
+      </div>
 
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-medium text-black">
-              {activity.type === 'tip' ? 'Pourboire reçu' : 'Nouvel avis'}
-            </p>
-            {activity.type === 'review' && activity.comment && (
-              <p className="text-[10px] text-gray-400 truncate">
-                &ldquo;{activity.comment}&rdquo;
-              </p>
-            )}
-            <p className="text-[10px] text-gray-400">
-              {formatDate(activity.created_at)}
-            </p>
-          </div>
-
-          <div className="text-right">
-            {activity.type === 'tip' ? (
-              <span className="text-base font-bold text-emerald-600">
-                +{formatAmount(activity.amount!)}
+      <div className="space-y-2">
+        {displayedActivities.map((activity, index) => (
+          <div
+            key={activity.id}
+            className="flex items-center gap-3 p-3 bg-gray-50/50 rounded-xl hover:bg-gray-100/50 transition-colors cursor-default animate-fade-in-up"
+            style={{ animationDelay: `${Math.min(index * 0.05, 0.4)}s` }}
+          >
+            <div className={`w-9 h-9 rounded-full flex items-center justify-center ${
+              activity.type === 'tip' ? 'bg-white border-2 border-emerald-500' : 'bg-gray-100'
+            }`}>
+              <span className={`text-sm font-semibold ${activity.type === 'tip' ? 'text-emerald-500' : 'text-amber-400'}`}>
+                {activity.type === 'tip' ? '€' : '★'}
               </span>
-            ) : (
-              <div className="flex items-center gap-0.5">
-                <span className="text-amber-400 text-xs">★</span>
-                <span className="font-semibold text-black text-sm">{activity.rating}</span>
-              </div>
-            )}
+            </div>
+
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium text-black">
+                {activity.type === 'tip' ? 'Pourboire reçu' : 'Nouvel avis'}
+              </p>
+              {activity.type === 'review' && activity.comment && (
+                <p className="text-[10px] text-gray-400 truncate">
+                  &ldquo;{activity.comment}&rdquo;
+                </p>
+              )}
+              <p className="text-[10px] text-gray-400">
+                {formatDate(activity.created_at)}
+              </p>
+            </div>
+
+            <div className="text-right">
+              {activity.type === 'tip' ? (
+                <span className="text-base font-bold text-emerald-600">
+                  +{formatAmount(activity.amount!)}
+                </span>
+              ) : (
+                <div className="flex items-center gap-0.5">
+                  <span className="text-amber-400 text-xs">★</span>
+                  <span className="font-semibold text-black text-sm">{activity.rating}</span>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   )
 }
