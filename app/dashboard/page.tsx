@@ -30,6 +30,7 @@ export default async function DashboardPage() {
 
   const profile = profileResult.profile
   const firstName = profile?.first_name || 'Utilisateur'
+  const userSlug = profile?.slug || user.id
 
   const renderStars = (rating: number) => {
     const stars = []
@@ -139,7 +140,7 @@ export default async function DashboardPage() {
 
           {/* Boutons */}
           <div className="flex gap-3">
-            <ShareButton userId={user.id} />
+            <ShareButton userId={userSlug} />
             
             <a
               href="https://dashboard.stripe.com"

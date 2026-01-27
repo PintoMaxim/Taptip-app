@@ -14,9 +14,10 @@ interface ProfileFormProps {
     email?: string
   } | null
   userId: string
+  slug?: string
 }
 
-export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
+export default function ProfileForm({ initialData, userId, slug: initialSlug }: ProfileFormProps) {
   const [formData, setFormData] = useState<ProfileData>({
     first_name: initialData?.first_name || '',
     last_name: initialData?.last_name || '',
@@ -47,6 +48,8 @@ export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
       setMessage({ type: 'error', text: result.error })
     } else {
       setMessage({ type: 'success', text: 'Profil mis à jour !' })
+      // On rafraîchit pour mettre à jour le slug dans l'URL si besoin
+      setTimeout(() => window.location.reload(), 1500)
     }
 
     setSaving(false)
@@ -156,11 +159,11 @@ export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
       <div className="mt-6 pt-5 border-t border-gray-100">
         <p className="text-[10px] text-gray-400 text-center uppercase tracking-wider mb-2">Votre page publique</p>
         <a
-          href={`/p/${userId}`}
+          href={`/p/${initialSlug || userId}`}
           target="_blank"
           className="block w-full text-center text-xs text-black font-medium py-3 px-4 rounded-xl bg-gray-50 border border-gray-100 active:scale-[0.98] transition-transform truncate"
         >
-          taptip.fr/p/{userId.slice(0, 8)}...
+          taptip.fr/p/{initialSlug || userId.slice(0, 8) + '...'}
         </a>
       </div>
     </div>

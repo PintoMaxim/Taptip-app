@@ -81,6 +81,35 @@ export async function updateProfile(data: ProfileData) {
     return { error: 'Non authentifié' }
   }
 
+  // Générer un slug unique basé sur le nom
+  const baseSlug = `${data.first_name}-${data.last_name}`
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // Enlever les accents
+    .replace(/[^a-z0-9]/g, '-') // Remplacer tout ce qui n'est pas alphanumérique par -
+    .replace(/-+/g, '-') // Enlever les doubles tirets
+    .replace(/^-|-$/g, '') // Enlever les tirets au début et à la fin
+
+  let slug = baseSlug
+  let isUnique = false
+  let attempts = 0
+
+  while (!isUnique && attempts < 5) {
+    const finalSlug = attempts === 0 ? slug : `${slug}-${Math.floor(Math.random() * 99)}`
+    const { data: existing } = await supabase
+      .from('users')
+      .select('id')
+      .eq('slug', finalSlug)
+      .not('id', 'eq', user.id)
+      .single()
+
+    if (!existing) {
+      slug = finalSlug
+      isUnique = true
+    }
+    attempts++
+  }
+
   const { error } = await supabase
     .from('users')
     .upsert({
@@ -90,6 +119,7 @@ export async function updateProfile(data: ProfileData) {
       last_name: data.last_name,
       job_title: data.job_title,
       bio: data.bio,
+      slug: slug,
       updated_at: new Date().toISOString(),
     })
 
@@ -100,6 +130,7 @@ export async function updateProfile(data: ProfileData) {
 
   revalidatePath('/dashboard')
   revalidatePath(`/p/${user.id}`)
+  revalidatePath(`/p/${slug}`)
   
   return { success: true }
 }

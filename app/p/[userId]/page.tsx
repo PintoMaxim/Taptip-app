@@ -16,22 +16,30 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
   
   const supabase = await createClient()
 
-  // Récupérer les infos de l'utilisateur
-  const { data: userData } = await supabase
-    .from('users')
-    .select('*')
-    .eq('id', userId)
-    .single()
+  // Récupérer les infos de l'utilisateur (par ID ou par SLUG)
+  const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(userId)
+  
+  let query = supabase.from('users').select('*')
+  
+  if (isUUID) {
+    query = query.eq('id', userId)
+  } else {
+    query = query.eq('slug', userId)
+  }
+
+  const { data: userData } = await query.single()
 
   // Vérifier si l'utilisateur existe ET a configuré Stripe
   if (!userData || !userData.stripe_account_id || !userData.stripe_onboarding_complete) {
     notFound()
   }
 
+  const realUserId = userData.id
+
   // Récupérer les stats et les derniers avis
   const [reviewStats, latestReviews] = await Promise.all([
-    getReviewStats(userId),
-    getLatestReviews(userId, 3)
+    getReviewStats(realUserId),
+    getLatestReviews(realUserId, 3)
   ])
 
   // Construire le nom d'affichage
@@ -122,13 +130,13 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
           </div>
 
           <TipButtons 
-            userId={userId} 
+            userId={realUserId} 
             stripeAccountId={userData.stripe_account_id} 
           />
         </div>
 
         {/* Section Avis */}
-        <ReviewSection userId={userId} latestReviews={latestReviews} />
+        <ReviewSection userId={realUserId} latestReviews={latestReviews} />
       </main>
 
       {/* Footer */}

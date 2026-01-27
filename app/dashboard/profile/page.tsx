@@ -44,6 +44,7 @@ export default async function ProfileSettingsPage() {
           <ProfileForm 
             initialData={profile} 
             userId={user.id}
+            slug={profile?.slug}
           />
         </main>
 
