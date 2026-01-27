@@ -22,8 +22,9 @@ export default function PullToRefresh({ children }: PullToRefreshProps) {
     if (!container) return
 
     const handleTouchStart = (e: TouchEvent) => {
-      startY.current = e.touches[0].clientY
+      // On ne capture le point de départ que si on est au sommet
       if (container.scrollTop <= 0) {
+        startY.current = e.touches[0].clientY
         setPulling(true)
       } else {
         setPulling(false)
@@ -34,17 +35,13 @@ export default function PullToRefresh({ children }: PullToRefreshProps) {
       const currentY = e.touches[0].clientY
       const distance = currentY - startY.current
       
-      // Si on scrolle vers le HAUT ou qu'on n'est pas au sommet, on désactive tout
-      if (distance <= 0 || container.scrollTop > 0) {
-        if (pulling) {
-          setPulling(false)
-          setPullDistance(0)
-        }
+      // Si on n'est pas en train de "puller" ou si on scrolle vers le haut, on laisse le scroll natif
+      if (!pulling || refreshing || distance <= 0) {
         return
       }
 
-      // Si on tire vers le bas au sommet
-      if (pulling && !refreshing) {
+      // Si on est au sommet et qu'on tire vers le bas
+      if (container.scrollTop <= 0) {
         if (e.cancelable) e.preventDefault()
         setPullDistance(Math.min(distance * 0.4, 80))
       }
@@ -84,7 +81,8 @@ export default function PullToRefresh({ children }: PullToRefreshProps) {
       ref={containerRef}
       className="min-h-[100dvh] overflow-y-auto"
       style={{ 
-        WebkitOverflowScrolling: 'touch'
+        WebkitOverflowScrolling: 'touch',
+        overscrollBehaviorY: 'auto'
       }}
     >
       {/* Indicateur de pull */}
