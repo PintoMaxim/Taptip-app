@@ -78,4 +78,3 @@ export async function getLatestReviews(userId: string, limit = 3) {
 
   return reviews
 }
-

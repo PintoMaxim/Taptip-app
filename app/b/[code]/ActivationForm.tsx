@@ -21,6 +21,23 @@ export default function ActivationForm({ code, isLoggedIn }: ActivationFormProps
   const router = useRouter()
   const supabase = createClient()
 
+  // Traduction des erreurs courantes
+  const translateError = (err: string) => {
+    if (err.includes('Database error saving new user')) {
+      return "Une erreur est survenue lors de la création de votre profil. Veuillez réessayer."
+    }
+    if (err.includes('User already registered')) {
+      return "Cet email est déjà utilisé par un autre compte."
+    }
+    if (err.includes('Invalid login credentials')) {
+      return "Email ou mot de passe incorrect."
+    }
+    if (err.includes('Password should be at least 6 characters')) {
+      return "Le mot de passe doit contenir au moins 6 caractères."
+    }
+    return err
+  }
+
   // Si déjà connecté, activer directement
   const handleActivate = async () => {
     setLoading(true)
@@ -29,7 +46,7 @@ export default function ActivationForm({ code, isLoggedIn }: ActivationFormProps
     const result = await activateBadge(code)
 
     if (result.error) {
-      setError(result.error)
+      setError(translateError(result.error))
       setLoading(false)
       return
     }
@@ -50,7 +67,7 @@ export default function ActivationForm({ code, isLoggedIn }: ActivationFormProps
     })
 
     if (authError) {
-      setError(authError.message)
+      setError(translateError(authError.message))
       setLoading(false)
       return
     }
@@ -59,7 +76,7 @@ export default function ActivationForm({ code, isLoggedIn }: ActivationFormProps
     const result = await activateBadge(code)
 
     if (result.error) {
-      setError(result.error)
+      setError(translateError(result.error))
       setLoading(false)
       return
     }
@@ -83,7 +100,7 @@ export default function ActivationForm({ code, isLoggedIn }: ActivationFormProps
     })
 
     if (authError) {
-      setError(authError.message)
+      setError(translateError(authError.message))
       setLoading(false)
       return
     }

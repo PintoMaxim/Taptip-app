@@ -14,6 +14,23 @@ export default function LoginPage() {
   const router = useRouter()
   const supabase = createClient()
 
+  // Traduction des erreurs courantes
+  const translateError = (err: string) => {
+    if (err.includes('Database error saving new user')) {
+      return "Une erreur est survenue lors de la création de votre profil. Veuillez réessayer."
+    }
+    if (err.includes('User already registered')) {
+      return "Cet email est déjà utilisé par un autre compte."
+    }
+    if (err.includes('Invalid login credentials')) {
+      return "Email ou mot de passe incorrect."
+    }
+    if (err.includes('Password should be at least 6 characters')) {
+      return "Le mot de passe doit faire au moins 6 caractères."
+    }
+    return err
+  }
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -25,7 +42,7 @@ export default function LoginPage() {
     })
 
     if (error) {
-      setError(error.message)
+      setError(translateError(error.message))
       setLoading(false)
     } else {
       router.push('/dashboard')
@@ -47,7 +64,7 @@ export default function LoginPage() {
     })
 
     if (error) {
-      setError(error.message)
+      setError(translateError(error.message))
     } else {
       setMessage('Vérifiez votre email pour confirmer votre inscription.')
     }
