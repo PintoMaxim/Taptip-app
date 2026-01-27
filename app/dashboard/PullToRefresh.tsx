@@ -9,7 +9,6 @@ interface PullToRefreshProps {
 
 export default function PullToRefresh({ children }: PullToRefreshProps) {
   const router = useRouter()
-  const [pulling, setPulling] = useState(false)
   const [pullDistance, setPullDistance] = useState(0)
   const [refreshing, setRefreshing] = useState(false)
   const startY = useRef(0)
@@ -22,12 +21,9 @@ export default function PullToRefresh({ children }: PullToRefreshProps) {
     if (!container) return
 
     const handleTouchStart = (e: TouchEvent) => {
-      // On ne capture le point de départ que si on est au sommet
+      // On ne stocke le point de départ que si on est au sommet
       if (container.scrollTop <= 0) {
         startY.current = e.touches[0].clientY
-        setPulling(true)
-      } else {
-        setPulling(false)
       }
     }
 
@@ -37,35 +33,28 @@ export default function PullToRefresh({ children }: PullToRefreshProps) {
       const currentY = e.touches[0].clientY
       const distance = currentY - startY.current
       
-      // Si on n'est pas au sommet ou qu'on remonte, on ne fait RIEN du tout
-      // On laisse le navigateur gérer le scroll nativement
-      if (container.scrollTop > 0 || distance <= 0) {
-        if (pulling) setPulling(false)
-        return
-      }
-
-      // Uniquement si on tire vers le bas au sommet
-      if (pulling) {
-        if (e.cancelable) e.preventDefault()
-        setPullDistance(Math.min(distance * 0.4, 80))
+      // Uniquement si on tire vers le bas ET qu'on est au sommet
+      if (container.scrollTop <= 0 && distance > 0) {
+        // On ne bloque le scroll natif QUE si on dépasse un petit seuil pour éviter les micro-blocages
+        if (distance > 10) {
+          if (e.cancelable) e.preventDefault()
+          setPullDistance(Math.min(distance * 0.4, 80))
+        }
+      } else {
+        if (pullDistance !== 0) setPullDistance(0)
       }
     }
 
     const handleTouchEnd = async () => {
-      if (!pulling) return
-
       if (pullDistance >= threshold && !refreshing) {
         setRefreshing(true)
         setPullDistance(60)
         
-        // Rafraîchir la page
         await new Promise(resolve => setTimeout(resolve, 800))
         router.refresh()
         
         setRefreshing(false)
       }
-      
-      setPulling(false)
       setPullDistance(0)
     }
 
@@ -78,16 +67,15 @@ export default function PullToRefresh({ children }: PullToRefreshProps) {
       container.removeEventListener('touchmove', handleTouchMove)
       container.removeEventListener('touchend', handleTouchEnd)
     }
-  }, [pulling, pullDistance, refreshing, router])
+  }, [pullDistance, refreshing, router])
 
   return (
     <div 
       ref={containerRef}
-      className="min-h-[100dvh] overflow-y-auto"
+      className="flex-1 overflow-y-auto"
       style={{ 
         WebkitOverflowScrolling: 'touch',
-        overscrollBehaviorY: 'auto',
-        scrollBehavior: 'auto' // Désactivation du smooth scroll qui peut créer de la latence sur mobile
+        touchAction: 'pan-y'
       }}
     >
       {/* Indicateur de pull */}
@@ -110,7 +98,7 @@ export default function PullToRefresh({ children }: PullToRefreshProps) {
         className="will-change-transform"
         style={{
           transform: `translateY(${pullDistance * 0.5}px)`,
-          transition: pulling ? 'none' : 'transform 0.4s cubic-bezier(0.2, 0, 0, 1)',
+          transition: pullDistance > 0 ? 'none' : 'transform 0.4s cubic-bezier(0.2, 0, 0, 1)',
         }}
       >
         {children}
@@ -118,4 +106,3 @@ export default function PullToRefresh({ children }: PullToRefreshProps) {
     </div>
   )
 }
-
