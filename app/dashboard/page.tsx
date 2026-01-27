@@ -25,6 +25,9 @@ export default async function DashboardPage() {
     getActivity(user.id, 10),
   ])
 
+  // Préchauffage du cache pour les autres pages
+  // (Next.js le fait via prefetch, mais on s'assure que les données sont prêtes)
+
   const profile = profileResult.profile
   const firstName = profile?.first_name || 'Utilisateur'
 

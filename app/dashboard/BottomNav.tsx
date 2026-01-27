@@ -33,16 +33,19 @@ export default function BottomNav() {
       href: '/dashboard',
       label: 'Accueil',
       Icon: HomeIcon,
+      prefetch: true,
     },
     {
       href: '/dashboard/profile',
       label: 'Profil',
       Icon: ProfileIcon,
+      prefetch: true,
     },
     {
       href: '/dashboard/settings',
       label: 'Réglages',
       Icon: SettingsIcon,
+      prefetch: true,
     },
   ]
 
@@ -57,6 +60,7 @@ export default function BottomNav() {
               <Link
                 key={item.href}
                 href={item.href}
+                prefetch={item.prefetch}
                 className={`flex flex-col items-center justify-center flex-1 py-2 transition-all duration-200 ${
                   isActive 
                     ? 'text-black' 

@@ -30,10 +30,16 @@ body {
   min-height: 100dvh;
 }
 
-/* Optimisation du scroll mobile */
+/* Optimisation du rendu et de la fluidité */
 * {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+  text-rendering: optimizeLegibility;
+}
+
+/* Éviter les sauts de contenu lors du chargement */
+img {
+  content-visibility: auto;
 }
 
 .min-h-screen {
