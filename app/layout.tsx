@@ -13,13 +13,40 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TapTip - Pourboires digitaux",
-  description: "Recevez des pourboires facilement avec TapTip",
+  title: "TapTip - Soutenez votre serveur",
+  description: "Consultez mon profil, mes avis et laissez-moi un pourboire en quelques secondes. Simple, rapide et sécurisé.",
+  metadataBase: new URL('https://app.taptip.fr'),
+  openGraph: {
+    title: "TapTip - Soutenez votre serveur",
+    description: "Consultez mon profil, mes avis et laissez-moi un pourboire en quelques secondes. Simple, rapide et sécurisé.",
+    url: 'https://app.taptip.fr',
+    siteName: 'TapTip',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'TapTip Logo',
+      },
+    ],
+    locale: 'fr_FR',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'TapTip - Soutenez votre serveur',
+    description: 'Laissez un pourboire et un avis en quelques secondes.',
+    images: ['/og-image.png'],
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "TapTip",
   },
+  icons: {
+    icon: '/favicon.png',
+    apple: '/apple-icon.png',
+  }
 };
 
 export const viewport: Viewport = {
