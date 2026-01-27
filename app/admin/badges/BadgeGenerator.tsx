@@ -44,8 +44,8 @@ export default function BadgeGenerator() {
   }
 
   const downloadCSV = () => {
-    const header = 'Code Badge,Code Parrainage,URL,Statut\n'
-    const rows = generatedBadges.map(b => `${b.code},${b.referral_code},${b.url},Non activé`).join('\n')
+    const header = 'Code Badge,URL,Statut\n'
+    const rows = generatedBadges.map(b => `${b.code},${b.url},Non activé`).join('\n')
     const csv = header + rows
     
     const blob = new Blob([csv], { type: 'text/csv' })
@@ -166,13 +166,6 @@ export default function BadgeGenerator() {
                   >
                     {copied === badge.code ? '✓' : '📋'}
                   </button>
-                </div>
-                {/* Code parrainage */}
-                <div className="flex items-center gap-2 mt-2 ml-6">
-                  <span className="text-[10px] text-gray-400">🎁 Code parrain :</span>
-                  <code className="text-xs font-mono font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">
-                    {badge.referral_code}
-                  </code>
                 </div>
               </div>
             ))}

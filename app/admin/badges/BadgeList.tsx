@@ -129,16 +129,6 @@ export default function BadgeList({ badges }: BadgeListProps) {
                     )}
                   </div>
 
-                  {/* Code Parrainage */}
-                  {badge.referral_code && (
-                    <div className="flex items-center gap-1.5 mt-1">
-                      <span className="text-xs text-gray-400">🎁 Code parrain :</span>
-                      <code className="text-xs font-mono font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">
-                        {badge.referral_code}
-                      </code>
-                    </div>
-                  )}
-
                   {/* Info utilisateur si activé */}
                   {badge.isActivated && badge.users && (
                     <p className="text-xs text-gray-600 mt-1">
