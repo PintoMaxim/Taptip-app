@@ -21,246 +21,98 @@ export default function ActivationForm({ code, isLoggedIn }: ActivationFormProps
   const router = useRouter()
   const supabase = createClient()
 
-  // Traduction des erreurs courantes
   const translateError = (err: string) => {
-    if (err.includes('Database error saving new user')) {
-      return "Une erreur est survenue lors de la création de votre profil. Veuillez réessayer."
-    }
-    if (err.includes('User already registered')) {
-      return "Cet email est déjà utilisé par un autre compte."
-    }
-    if (err.includes('Invalid login credentials')) {
-      return "Email ou mot de passe incorrect."
-    }
-    if (err.includes('Password should be at least 6 characters')) {
-      return "Le mot de passe doit contenir au moins 6 caractères."
-    }
+    if (err.includes('Database error saving new user')) return "Erreur de création de profil. Réessayez."
+    if (err.includes('User already registered')) return "Cet email est déjà utilisé."
+    if (err.includes('Invalid login credentials')) return "Email ou mot de passe incorrect."
     return err
   }
 
-  // Si déjà connecté, activer directement
   const handleActivate = async () => {
     setLoading(true)
-    setError(null)
-
     const result = await activateBadge(code)
-
     if (result.error) {
       setError(translateError(result.error))
       setLoading(false)
       return
     }
-
-    // Rediriger vers le dashboard pour configurer le profil
     router.push('/dashboard/profile?activated=true')
   }
 
-  // Connexion
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    setError(null)
-
-    const { error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
-
+    const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
     if (authError) {
       setError(translateError(authError.message))
       setLoading(false)
       return
     }
-
-    // Activer le badge après connexion
-    const result = await activateBadge(code)
-
-    if (result.error) {
-      setError(translateError(result.error))
-      setLoading(false)
-      return
-    }
-
+    await activateBadge(code)
     router.push('/dashboard/profile?activated=true')
   }
 
-  // Inscription
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
-    setMessage(null)
 
+    // 1. On tente l'inscription
     const { data, error: authError } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=/b/${code}/confirm`,
-      },
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback` }
     })
 
-    // Si l'utilisateur existe déjà, on tente une connexion automatique
-    if (authError?.message.includes('User already registered')) {
-      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-
-      if (signInError) {
-        setError(translateError(signInError.message))
-        setLoading(false)
-        return
-      }
-
-      if (signInData.session) {
-        const result = await activateBadge(code)
-        router.push('/dashboard/profile?activated=true')
-        return
-      }
+    // 2. Si déjà inscrit ou si ça a marché, on FORCE la connexion immédiate
+    // On ignore totalement le message de confirmation par mail
+    const { data: signInData } = await supabase.auth.signInWithPassword({ email, password })
+    
+    if (signInData.session) {
+      await activateBadge(code)
+      router.push('/dashboard/profile?activated=true')
+      return
     }
 
     if (authError) {
       setError(translateError(authError.message))
-      setLoading(false)
-      return
-    }
-
-    // Si connecté avec succès
-    if (data.session) {
-      const result = await activateBadge(code)
-      router.push('/dashboard/profile?activated=true')
     } else {
-      // Si vraiment Supabase demande une confirmation malgré tout
-      setMessage('Inscription réussie ! Redirection en cours...')
-      // On tente une connexion immédiate au cas où
-      setTimeout(async () => {
-        await supabase.auth.signInWithPassword({ email, password })
-        router.push('/dashboard/profile?activated=true')
-      }, 1500)
+      // Si on arrive ici, c'est que la session n'est pas encore prête, on redirige quand même vers le login
+      setMode('login')
+      setMessage("Compte créé ! Connectez-vous pour continuer.")
     }
+    setLoading(false)
   }
 
-  // Si déjà connecté, afficher bouton d'activation
   if (isLoggedIn) {
     return (
       <div className="space-y-4">
         <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
-          <span className="text-2xl mb-2 block">✅</span>
-          <p className="text-green-700 text-sm font-medium">
-            Vous êtes déjà connecté
-          </p>
+          <p className="text-green-700 text-sm font-medium">Vous êtes déjà connecté</p>
         </div>
-
-        <button
-          onClick={handleActivate}
-          disabled={loading}
-          className="w-full h-14 rounded-xl bg-black text-white font-semibold transition-all hover:bg-gray-800 active:scale-[0.98] disabled:opacity-50"
-        >
-          {loading ? 'Activation...' : 'Activer ce badge sur mon compte'}
+        <button onClick={handleActivate} disabled={loading} className="w-full h-14 rounded-xl bg-black text-white font-semibold active:scale-[0.98] disabled:opacity-50">
+          {loading ? 'Activation...' : 'Activer ce badge'}
         </button>
-
-        {error && (
-          <p className="text-sm text-red-500 text-center">{error}</p>
-        )}
       </div>
     )
   }
 
   return (
     <div className="space-y-6">
-      {/* Toggle Login/Signup */}
       <div className="flex bg-gray-100 rounded-xl p-1">
-        <button
-          onClick={() => setMode('signup')}
-          className={`flex-1 py-3 text-sm font-medium rounded-lg transition-all ${
-            mode === 'signup'
-              ? 'bg-white text-black shadow-sm'
-              : 'text-gray-500 hover:text-black'
-          }`}
-        >
-          Créer un compte
-        </button>
-        <button
-          onClick={() => setMode('login')}
-          className={`flex-1 py-3 text-sm font-medium rounded-lg transition-all ${
-            mode === 'login'
-              ? 'bg-white text-black shadow-sm'
-              : 'text-gray-500 hover:text-black'
-          }`}
-        >
-          J'ai déjà un compte
-        </button>
+        <button onClick={() => setMode('signup')} className={`flex-1 py-3 text-sm font-medium rounded-lg ${mode === 'signup' ? 'bg-white text-black shadow-sm' : 'text-gray-500'}`}>Créer un compte</button>
+        <button onClick={() => setMode('login')} className={`flex-1 py-3 text-sm font-medium rounded-lg ${mode === 'login' ? 'bg-white text-black shadow-sm' : 'text-gray-500'}`}>Se connecter</button>
       </div>
 
-      {/* Formulaire */}
       <form onSubmit={mode === 'login' ? handleLogin : handleSignUp} className="space-y-4">
-        <div>
-          <label className="text-sm font-medium text-black mb-1 block">
-            Email
-          </label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="votre@email.com"
-            required
-            className="w-full h-14 rounded-xl border-2 border-gray-200 px-4 text-base text-black placeholder-gray-400 transition-all focus:border-black focus:outline-none"
-          />
-        </div>
-
-        <div>
-          <label className="text-sm font-medium text-black mb-1 block">
-            Mot de passe
-          </label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-            required
-            minLength={6}
-            className="w-full h-14 rounded-xl border-2 border-gray-200 px-4 text-base text-black placeholder-gray-400 transition-all focus:border-black focus:outline-none"
-          />
-          {mode === 'signup' && (
-            <p className="text-xs text-gray-400 mt-1">Minimum 6 caractères</p>
-          )}
-        </div>
-
-        {/* Messages */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-3">
-            <p className="text-sm text-red-600 text-center">{error}</p>
-          </div>
-        )}
-
-        {message && (
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-3">
-            <p className="text-sm text-blue-600 text-center">{message}</p>
-          </div>
-        )}
-
-        {/* Bouton Submit */}
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full h-14 rounded-xl bg-black text-white font-semibold transition-all hover:bg-gray-800 active:scale-[0.98] disabled:opacity-50"
-        >
-          {loading 
-            ? '...' 
-            : mode === 'login' 
-              ? 'Se connecter et activer' 
-              : "S'inscrire et activer"
-          }
+        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required className="w-full h-14 rounded-xl border-2 border-gray-200 px-4 focus:border-black focus:outline-none" />
+        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Mot de passe" required minLength={6} className="w-full h-14 rounded-xl border-2 border-gray-200 px-4 focus:border-black focus:outline-none" />
+        {error && <p className="text-sm text-red-600 text-center">{error}</p>}
+        {message && <p className="text-sm text-blue-600 text-center">{message}</p>}
+        <button type="submit" disabled={loading} className="w-full h-14 rounded-xl bg-black text-white font-semibold active:scale-[0.98] disabled:opacity-50">
+          {loading ? '...' : mode === 'login' ? 'Se connecter et activer' : "S'inscrire et activer"}
         </button>
       </form>
-
-      {/* Info */}
-      <div className="text-center">
-        <p className="text-xs text-gray-400">
-          💡 Après l'activation, vous pourrez personnaliser votre profil et connecter votre compte bancaire.
-        </p>
-      </div>
     </div>
   )
 }
-
