@@ -43,9 +43,19 @@ export default async function BadgeActivationPage({ params }: PageProps) {
           <h1 className="text-xl font-bold text-black mb-2">
             Profil en cours de configuration
           </h1>
-          <p className="text-gray-500 text-sm">
+          <p className="text-gray-500 text-sm mb-8">
             Ce badge est activé mais son propriétaire n'a pas encore terminé la configuration.
-        </p>
+          </p>
+          
+          <div className="pt-6 border-t border-gray-100">
+            <p className="text-xs text-gray-400 mb-4">C'est votre badge ?</p>
+            <a 
+              href="/login"
+              className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-black text-white text-sm font-semibold active:scale-[0.98] transition-transform"
+            >
+              Se connecter à mon espace
+            </a>
+          </div>
         </div>
       </div>
     )
