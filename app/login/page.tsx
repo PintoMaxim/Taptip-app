@@ -64,8 +64,8 @@ export default function LoginPage() {
       <div className="w-full max-w-[390px] min-h-screen bg-white flex flex-col items-center justify-center px-6">
         <div className="mb-10"><Image src="/logo.png" alt="Logo" width={100} height={100} priority /></div>
         <form className="flex w-full flex-col gap-4">
-          <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="h-14 w-full rounded-xl border-2 border-gray-200 px-4 focus:border-black focus:outline-none" required />
-          <input type="password" placeholder="Mot de passe" value={password} onChange={(e) => setPassword(e.target.value)} className="h-14 w-full rounded-xl border-2 border-gray-200 px-4 focus:border-black focus:outline-none" required />
+          <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="h-14 w-full rounded-xl border-2 border-gray-200 px-4 focus:border-black focus:outline-none text-black" required />
+          <input type="password" placeholder="Mot de passe" value={password} onChange={(e) => setPassword(e.target.value)} className="h-14 w-full rounded-xl border-2 border-gray-200 px-4 focus:border-black focus:outline-none text-black" required />
           {error && <p className="text-sm text-red-500 text-center">{error}</p>}
           <button type="submit" onClick={handleLogin} disabled={loading} className="h-14 w-full rounded-xl bg-black text-white font-semibold active:scale-[0.98] disabled:opacity-50">Se connecter</button>
           <button type="button" onClick={handleSignUp} disabled={loading} className="h-14 w-full rounded-xl border-2 border-black text-black font-semibold active:scale-[0.98] disabled:opacity-50">S'inscrire</button>

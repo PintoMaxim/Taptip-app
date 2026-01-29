@@ -103,8 +103,8 @@ export default function ActivationForm({ code, isLoggedIn }: ActivationFormProps
       </div>
 
       <form onSubmit={handleAuth} className="space-y-4">
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required className="w-full h-14 rounded-xl border-2 border-gray-200 px-4 focus:border-black focus:outline-none" />
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Mot de passe" required minLength={6} className="w-full h-14 rounded-xl border-2 border-gray-200 px-4 focus:border-black focus:outline-none" />
+        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required className="w-full h-14 rounded-xl border-2 border-gray-200 px-4 focus:border-black focus:outline-none text-black" />
+        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Mot de passe" required minLength={6} className="w-full h-14 rounded-xl border-2 border-gray-200 px-4 focus:border-black focus:outline-none text-black" />
         {error && <p className="text-sm text-red-600 text-center">{error}</p>}
         <button type="submit" disabled={loading} className="w-full h-14 rounded-xl bg-black text-white font-semibold active:scale-[0.98] disabled:opacity-50">
           {loading ? 'Chargement...' : mode === 'login' ? 'Se connecter et activer' : "S'inscrire et activer"}
