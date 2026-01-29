@@ -18,9 +18,7 @@ export default async function ProfileSettingsPage() {
 
   return (
     <div className="min-h-screen bg-white flex justify-center">
-      {/* Container mobile fixe */}
       <div className="w-full max-w-[390px] min-h-screen bg-white">
-        {/* Header */}
         <header className="px-5 py-4 flex items-center gap-3 border-b border-gray-100">
           <Link href="/dashboard" className="w-10 h-10 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
             {profile?.avatar_url ? (
@@ -44,11 +42,9 @@ export default async function ProfileSettingsPage() {
           <ProfileForm 
             initialData={profile} 
             userId={user.id}
-            slug={profile?.slug}
           />
         </main>
 
-        {/* Barre de navigation */}
         <BottomNav />
       </div>
     </div>

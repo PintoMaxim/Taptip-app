@@ -25,12 +25,8 @@ export default async function DashboardPage() {
     getActivity(user.id, 10),
   ])
 
-  // Préchauffage du cache pour les autres pages
-  // (Next.js le fait via prefetch, mais on s'assure que les données sont prêtes)
-
   const profile = profileResult.profile
   const firstName = profile?.first_name || 'Utilisateur'
-  const userSlug = profile?.slug || user.id
 
   const renderStars = (rating: number) => {
     const stars = []
@@ -66,10 +62,8 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-[100dvh] bg-white flex justify-center">
-      {/* Container mobile fixe */}
       <div className="w-full max-w-[390px] min-h-[100dvh] bg-white flex flex-col relative">
         <PullToRefresh>
-        {/* Header */}
         <header className="px-5 py-4 flex items-center justify-between border-b border-gray-100 sticky top-0 bg-white z-10">
           <div className="flex items-center gap-3">
             <Image
@@ -102,7 +96,6 @@ export default async function DashboardPage() {
         </header>
 
         <main className="px-5 py-5 space-y-5 stagger-children">
-          {/* Carte Stats */}
           <div className="bg-black rounded-2xl p-5 text-white relative overflow-hidden">
             <div className="absolute right-3 top-1/2 -translate-y-1/2 opacity-10">
               <Image
@@ -138,9 +131,8 @@ export default async function DashboardPage() {
             </div>
           </div>
 
-          {/* Boutons */}
           <div className="flex gap-3">
-            <ShareButton userId={userSlug} />
+            <ShareButton userId={user.id} />
             
             <a
               href="https://dashboard.stripe.com"
@@ -156,7 +148,6 @@ export default async function DashboardPage() {
             </a>
           </div>
 
-          {/* Alerte Stripe */}
           {!stripeStatus.isComplete && (
             <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
               <div className="flex items-center gap-3">
@@ -179,17 +170,14 @@ export default async function DashboardPage() {
             </div>
           )}
 
-          {/* Activité */}
           <section>
             <ActivityList activities={activities} initialLimit={5} />
           </section>
 
-          {/* Espace pour la barre de navigation */}
           <div className="h-20" />
         </main>
         </PullToRefresh>
 
-        {/* Barre de navigation */}
         <BottomNav />
       </div>
     </div>
