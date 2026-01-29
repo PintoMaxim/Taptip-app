@@ -5,6 +5,7 @@ import { getProfile } from '@/app/actions/profile'
 import StripeConnectButton from '../StripeConnectButton'
 import LogoutButton from '../LogoutButton'
 import BottomNav from '../BottomNav'
+import CopyProfileLink from './CopyProfileLink'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -85,7 +86,7 @@ export default async function SettingsPage() {
                   <p className="text-[10px] text-gray-500 leading-relaxed">
                     <span className="font-bold text-black">💡 Conseil pour l'inscription :</span><br />
                     • Choisissez <span className="font-bold">"Particulier"</span> ou <span className="font-bold">"Entreprise individuelle"</span>.<br />
-                    • Pour le site internet, utilisez votre lien TapTip : <span className="font-mono bg-gray-100 px-1 rounded">app.taptip.fr/p/{user.id}</span>
+                    • Pour le site internet, utilisez votre lien TapTip : <CopyProfileLink userId={user.id} />
                   </p>
                 </div>
               )}
