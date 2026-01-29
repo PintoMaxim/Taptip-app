@@ -69,9 +69,7 @@ export async function getLatestReviews(userId: string, limit = 3) {
     .eq('user_id', userId)
     .not('comment', 'is', null)
     .order('created_at', { ascending: false })
-    .limit(limit)
-
-  if (error) {
+    .limit(limit)  if (error) {
     console.error('Erreur récupération avis:', error)
     return []
   }

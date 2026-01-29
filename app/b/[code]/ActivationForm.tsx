@@ -91,7 +91,7 @@ export default function ActivationForm({ code, isLoggedIn }: ActivationFormProps
     setError(null)
     setMessage(null)
 
-    const { error: authError } = await supabase.auth.signUp({
+    const { data, error: authError } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -105,8 +105,20 @@ export default function ActivationForm({ code, isLoggedIn }: ActivationFormProps
       return
     }
 
-    setMessage('Vérifiez votre email pour confirmer votre inscription, puis revenez ici.')
-    setLoading(false)
+    // Si la session existe déjà (Confirmation email désactivée), on active le badge direct
+    if (data.session) {
+      const result = await activateBadge(code)
+      if (result.error) {
+        setError(translateError(result.error))
+        setLoading(false)
+        return
+      }
+      router.push('/dashboard/profile?activated=true')
+    } else {
+      // Cas rare où la confirmation serait quand même activée côté Supabase
+      setMessage('Un email de confirmation vous a été envoyé.')
+      setLoading(false)
+    }
   }
 
   // Si déjà connecté, afficher bouton d'activation

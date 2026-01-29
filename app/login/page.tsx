@@ -55,7 +55,7 @@ export default function LoginPage() {
     setError(null)
     setMessage(null)
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -65,8 +65,11 @@ export default function LoginPage() {
 
     if (error) {
       setError(translateError(error.message))
+    } else if (data.session) {
+      // Connexion instantanée
+      router.push('/dashboard')
     } else {
-      setMessage('Vérifiez votre email pour confirmer votre inscription.')
+      setMessage('Un email de confirmation vous a été envoyé.')
     }
     setLoading(false)
   }
