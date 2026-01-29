@@ -22,16 +22,10 @@ export default async function ProfileSettingsPage() {
         <header className="px-5 py-4 flex items-center gap-3 border-b border-gray-100">
           <Link href="/dashboard" className="w-10 h-10 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
             {profile?.avatar_url ? (
-              <img
-                src={profile.avatar_url}
-                alt="Avatar"
-                className="w-full h-full object-cover"
-              />
+              <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
-                <span className="text-gray-400 text-sm font-bold">
-                  {firstName[0]}
-                </span>
+                <span className="text-gray-400 text-sm font-bold">{firstName[0]}</span>
               </div>
             )}
           </Link>
@@ -39,10 +33,7 @@ export default async function ProfileSettingsPage() {
         </header>
 
         <main className="px-5 py-6 pb-24">
-          <ProfileForm 
-            initialData={profile} 
-            userId={user.id}
-          />
+          <ProfileForm initialData={profile} userId={user.id} />
         </main>
 
         <BottomNav />

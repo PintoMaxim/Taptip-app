@@ -16,72 +16,70 @@ export default function ActivationForm({ code, isLoggedIn }: ActivationFormProps
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [message, setMessage] = useState<string | null>(null)
-  
   const router = useRouter()
   const supabase = createClient()
-
-  const translateError = (err: string) => {
-    if (err.includes('Database error saving new user')) return "Erreur de création de profil. Réessayez."
-    if (err.includes('User already registered')) return "Cet email est déjà utilisé."
-    if (err.includes('Invalid login credentials')) return "Email ou mot de passe incorrect."
-    return err
-  }
 
   const handleActivate = async () => {
     setLoading(true)
     const result = await activateBadge(code)
     if (result.error) {
-      setError(translateError(result.error))
+      setError(result.error)
       setLoading(false)
       return
     }
     router.push('/dashboard/profile?activated=true')
   }
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
-    if (authError) {
-      setError(translateError(authError.message))
-      setLoading(false)
-      return
-    }
-    await activateBadge(code)
-    router.push('/dashboard/profile?activated=true')
-  }
-
-  const handleSignUp = async (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
 
-    // 1. On tente l'inscription
-    const { data, error: authError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback` }
-    })
-
-    // 2. Si déjà inscrit ou si ça a marché, on FORCE la connexion immédiate
-    // On ignore totalement le message de confirmation par mail
-    const { data: signInData } = await supabase.auth.signInWithPassword({ email, password })
-    
-    if (signInData.session) {
-      await activateBadge(code)
-      router.push('/dashboard/profile?activated=true')
-      return
-    }
-
-    if (authError) {
-      setError(translateError(authError.message))
+    if (mode === 'login') {
+      const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
+      if (authError) {
+        setError("Email ou mot de passe incorrect.")
+        setLoading(false)
+        return
+      }
     } else {
-      // Si on arrive ici, c'est que la session n'est pas encore prête, on redirige quand même vers le login
-      setMode('login')
-      setMessage("Compte créé ! Connectez-vous pour continuer.")
+      // Inscription
+      const { data, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: `${window.location.origin}/auth/callback` }
+      })
+
+      if (authError) {
+        if (authError.message.includes('already registered')) {
+          // Si déjà inscrit, on tente le login direct
+          const { error: loginError } = await supabase.auth.signInWithPassword({ email, password })
+          if (loginError) {
+            setError("Cet email est déjà utilisé. Connectez-vous.")
+            setLoading(false)
+            return
+          }
+        } else {
+          setError("Erreur lors de l'inscription.")
+          setLoading(false)
+          return
+        }
+      }
+      
+      // On tente une connexion forcée au cas où la session n'est pas revenue
+      if (!data.session) {
+        await supabase.auth.signInWithPassword({ email, password })
+      }
     }
-    setLoading(false)
+
+    // Une fois connecté, on active le badge
+    const result = await activateBadge(code)
+    if (result.error) {
+      setError(result.error)
+      setLoading(false)
+    } else {
+      router.push('/dashboard/profile?activated=true')
+    }
   }
 
   if (isLoggedIn) {
@@ -104,13 +102,12 @@ export default function ActivationForm({ code, isLoggedIn }: ActivationFormProps
         <button onClick={() => setMode('login')} className={`flex-1 py-3 text-sm font-medium rounded-lg ${mode === 'login' ? 'bg-white text-black shadow-sm' : 'text-gray-500'}`}>Se connecter</button>
       </div>
 
-      <form onSubmit={mode === 'login' ? handleLogin : handleSignUp} className="space-y-4">
+      <form onSubmit={handleAuth} className="space-y-4">
         <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required className="w-full h-14 rounded-xl border-2 border-gray-200 px-4 focus:border-black focus:outline-none" />
         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Mot de passe" required minLength={6} className="w-full h-14 rounded-xl border-2 border-gray-200 px-4 focus:border-black focus:outline-none" />
         {error && <p className="text-sm text-red-600 text-center">{error}</p>}
-        {message && <p className="text-sm text-blue-600 text-center">{message}</p>}
         <button type="submit" disabled={loading} className="w-full h-14 rounded-xl bg-black text-white font-semibold active:scale-[0.98] disabled:opacity-50">
-          {loading ? '...' : mode === 'login' ? 'Se connecter et activer' : "S'inscrire et activer"}
+          {loading ? 'Chargement...' : mode === 'login' ? 'Se connecter et activer' : "S'inscrire et activer"}
         </button>
       </form>
     </div>

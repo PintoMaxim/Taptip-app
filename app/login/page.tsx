@@ -10,23 +10,16 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [message, setMessage] = useState<string | null>(null)
   const router = useRouter()
   const supabase = createClient()
-
-  const translateError = (err: string) => {
-    if (err.includes('Database error saving new user')) return "Erreur de création de profil. Réessayez."
-    if (err.includes('User already registered')) return "Cet email est déjà utilisé."
-    if (err.includes('Invalid login credentials')) return "Email ou mot de passe incorrect."
-    return err
-  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+    setError(null)
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) {
-      setError(translateError(error.message))
+      setError("Email ou mot de passe incorrect.")
       setLoading(false)
     } else {
       router.push('/dashboard')
@@ -38,24 +31,32 @@ export default function LoginPage() {
     setLoading(true)
     setError(null)
 
-    await supabase.auth.signUp({
+    const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
     })
 
-    // On tente la connexion immédiate quoi qu'il arrive
-    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({ email, password })
-    
-    if (signInData.session) {
-      router.push('/dashboard')
-    } else if (signInError) {
-      setError(translateError(signInError.message))
-      setLoading(false)
-    } else {
-      setMessage('Compte créé ! Connectez-vous.')
-      setLoading(false)
+    if (signUpError) {
+      if (signUpError.message.includes('already registered')) {
+        const { error: loginError } = await supabase.auth.signInWithPassword({ email, password })
+        if (loginError) {
+          setError("Cet email est déjà utilisé. Connectez-vous.")
+          setLoading(false)
+          return
+        }
+      } else {
+        setError("Erreur lors de l'inscription.")
+        setLoading(false)
+        return
+      }
     }
+
+    // Connexion automatique après inscription
+    if (!data.session) {
+      await supabase.auth.signInWithPassword({ email, password })
+    }
+    router.push('/dashboard')
   }
 
   return (
@@ -66,7 +67,6 @@ export default function LoginPage() {
           <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="h-14 w-full rounded-xl border-2 border-gray-200 px-4 focus:border-black focus:outline-none" required />
           <input type="password" placeholder="Mot de passe" value={password} onChange={(e) => setPassword(e.target.value)} className="h-14 w-full rounded-xl border-2 border-gray-200 px-4 focus:border-black focus:outline-none" required />
           {error && <p className="text-sm text-red-500 text-center">{error}</p>}
-          {message && <p className="text-sm text-green-600 text-center">{message}</p>}
           <button type="submit" onClick={handleLogin} disabled={loading} className="h-14 w-full rounded-xl bg-black text-white font-semibold active:scale-[0.98] disabled:opacity-50">Se connecter</button>
           <button type="button" onClick={handleSignUp} disabled={loading} className="h-14 w-full rounded-xl border-2 border-black text-black font-semibold active:scale-[0.98] disabled:opacity-50">S'inscrire</button>
         </form>

@@ -15,7 +15,12 @@ export async function getProfile() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Non authentifié', profile: null }
 
-  const { data: profile, error } = await supabase.from('users').select('*').eq('id', user.id).single()
+  const { data: profile, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('id', user.id)
+    .single()
+
   return { profile, error: error?.message || null }
 }
 
@@ -35,6 +40,7 @@ export async function updateProfile(data: ProfileData) {
   })
 
   if (error) return { error: error.message }
+  
   revalidatePath('/dashboard')
   revalidatePath(`/p/${user.id}`)
   return { success: true }
@@ -59,6 +65,7 @@ export async function uploadAvatar(formData: FormData) {
   const avatarUrl = `${publicUrl}?v=${Date.now()}`
 
   await supabase.from('users').update({ avatar_url: avatarUrl, updated_at: new Date().toISOString() }).eq('id', user.id)
+  
   revalidatePath('/dashboard')
   revalidatePath(`/p/${user.id}`)
   return { success: true, url: avatarUrl }
