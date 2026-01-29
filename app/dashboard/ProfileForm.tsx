@@ -65,10 +65,10 @@ export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <input type="text" name="first_name" value={formData.first_name} onChange={handleChange} placeholder="Prénom" className="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200" />
-        <input type="text" name="last_name" value={formData.last_name} onChange={handleChange} placeholder="Nom" className="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200" />
-        <input type="text" name="job_title" value={formData.job_title} onChange={handleChange} placeholder="Métier" className="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200" />
-        <textarea name="bio" value={formData.bio} onChange={handleChange} placeholder="Bio" className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 resize-none" rows={3} maxLength={120} />
+        <input type="text" name="first_name" value={formData.first_name} onChange={handleChange} placeholder="Prénom" className="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 text-black font-medium" />
+        <input type="text" name="last_name" value={formData.last_name} onChange={handleChange} placeholder="Nom" className="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 text-black font-medium" />
+        <input type="text" name="job_title" value={formData.job_title} onChange={handleChange} placeholder="Métier" className="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 text-black font-medium" />
+        <textarea name="bio" value={formData.bio} onChange={handleChange} placeholder="Bio" className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 resize-none text-black font-medium" rows={3} maxLength={120} />
         <button type="submit" disabled={saving} className="w-full h-12 rounded-xl bg-black text-white font-semibold active:scale-[0.98] disabled:opacity-50">
           {saving ? 'Sauvegarde...' : 'Sauvegarder'}
         </button>
