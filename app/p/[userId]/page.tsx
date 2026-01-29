@@ -16,7 +16,13 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
   
   const supabase = await createClient()
 
-  // Récupération classique par ID (On oublie le slug pour l'instant)
+  // On vérifie si c'est un UUID pour éviter les erreurs SQL si un vieux slug traîne
+  const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(userId)
+  
+  if (!isUUID) {
+    notFound()
+  }
+
   const { data: userData } = await supabase
     .from('users')
     .select('*')
