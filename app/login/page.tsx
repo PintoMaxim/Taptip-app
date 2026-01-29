@@ -63,13 +63,24 @@ export default function LoginPage() {
       },
     })
 
-    if (error) {
+    if (error?.message.includes('User already registered')) {
+      // Tentative de connexion automatique si déjà inscrit
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+      if (signInError) {
+        setError(translateError(signInError.message))
+      } else if (signInData.session) {
+        router.push('/dashboard')
+      }
+    } else if (error) {
       setError(translateError(error.message))
     } else if (data.session) {
-      // Connexion instantanée
       router.push('/dashboard')
     } else {
-      setMessage('Un email de confirmation vous a été envoyé.')
+      setMessage('Inscription réussie ! Redirection...')
+      setTimeout(() => router.push('/dashboard'), 1500)
     }
     setLoading(false)
   }
