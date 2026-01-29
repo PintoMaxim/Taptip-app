@@ -55,7 +55,7 @@ export default async function SettingsPage() {
               Paiements
             </h2>
             <div className="bg-gray-50 rounded-xl p-4">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center">
                   <span className="text-white text-base">💳</span>
                 </div>
@@ -80,6 +80,15 @@ export default async function SettingsPage() {
                   <StripeConnectButton />
                 )}
               </div>
+              {!stripeStatus.isComplete && (
+                <div className="mt-3 pt-3 border-t border-gray-100">
+                  <p className="text-[10px] text-gray-500 leading-relaxed">
+                    <span className="font-bold text-black">💡 Conseil pour l'inscription :</span><br />
+                    • Choisissez <span className="font-bold">"Particulier"</span> ou <span className="font-bold">"Entreprise individuelle"</span>.<br />
+                    • Pour le site internet, utilisez votre lien TapTip : <span className="font-mono bg-gray-100 px-1 rounded">app.taptip.fr/p/{user.id}</span>
+                  </p>
+                </div>
+              )}
             </div>
           </section>
 
