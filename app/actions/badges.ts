@@ -46,6 +46,7 @@ export async function createBadges(count: number) {
       code: badgeCode,
       referral_code: referralCode,
       created_by: user?.id,
+      status: 'available'
     })
   }
 
@@ -60,9 +61,35 @@ export async function getAllBadges() {
   if (!(await isAdmin())) return { error: 'Non autorisé', badges: [] }
   const supabase = await createClient()
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-  const { data: badges, error } = await supabase.from('badges').select('*, users(first_name, last_name, email)').order('created_at', { ascending: false })
+  const { data: badges, error } = await supabase
+    .from('badges')
+    .select('*, users(first_name, last_name, email)')
+    .order('created_at', { ascending: false })
+
   if (error) return { error: 'Erreur lors de la récupération', badges: [] }
-  return { badges: badges.map(b => ({ ...b, url: `${baseUrl}/b/${b.code}`, isActivated: !!b.user_id })) }
+  
+  return { 
+    badges: badges.map(b => ({ 
+      ...b, 
+      url: `${baseUrl}/b/${b.code}`, 
+      isActivated: !!b.user_id 
+    })) 
+  }
+}
+
+export async function updateBadgeStatus(code: string, status: 'available' | 'pending') {
+  if (!(await isAdmin())) return { error: 'Non autorisé' }
+  const supabase = await createClient()
+  
+  const { error } = await supabase
+    .from('badges')
+    .update({ status })
+    .eq('code', code.toUpperCase())
+
+  if (error) return { error: 'Erreur lors de la mise à jour' }
+  
+  revalidatePath('/admin/badges')
+  return { success: true }
 }
 
 export async function getBadgeByCode(code: string) {
@@ -81,19 +108,30 @@ export async function activateBadge(code: string) {
   if (!badge) return { error: 'Badge non trouvé' }
   if (badge.user_id) return { error: 'Ce badge est déjà activé' }
 
-  const { error } = await supabase.from('badges').update({ user_id: user.id, activated_at: new Date().toISOString() }).eq('code', code.toUpperCase())
+  const { error } = await supabase.from('badges').update({ 
+    user_id: user.id, 
+    activated_at: new Date().toISOString(),
+    status: 'activated'
+  }).eq('code', code.toUpperCase())
+  
   if (error) return { error: 'Erreur lors de l\'activation' }
 
-  // Plus d'upsert sur users ici, on garde ça simple pour éviter les conflits SQL
   revalidatePath(`/b/${code}`)
+  revalidatePath('/admin/badges')
   return { success: true }
 }
 
 export async function getBadgeStats() {
   if (!(await isAdmin())) return { error: 'Non autorisé' }
   const supabase = await createClient()
-  const { data: badges } = await supabase.from('badges').select('id, user_id')
-  const total = badges?.length || 0
-  const activated = badges?.filter(b => b.user_id).length || 0
-  return { total, activated, available: total - activated }
+  const { data: badges } = await supabase.from('badges').select('status, user_id')
+  
+  if (!badges) return { total: 0, activated: 0, pending: 0, available: 0 }
+
+  const total = badges.length
+  const activated = badges.filter(b => b.user_id || b.status === 'activated').length
+  const pending = badges.filter(b => b.status === 'pending' && !b.user_id).length
+  const available = badges.filter(b => (b.status === 'available' || !b.status) && !b.user_id).length
+
+  return { total, activated, pending, available }
 }

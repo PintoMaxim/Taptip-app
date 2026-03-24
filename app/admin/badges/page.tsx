@@ -50,18 +50,22 @@ export default async function AdminBadgesPage() {
 
         <main className="px-5 py-5 space-y-5">
           {/* Stats */}
-          <div className="flex gap-3">
-            <div className="flex-1 bg-gray-50 rounded-xl p-4">
-              <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Total</p>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+              <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1 font-bold">Total</p>
               <p className="text-2xl font-black text-black">{stats.total}</p>
             </div>
-            <div className="flex-1 bg-gray-50 rounded-xl p-4">
-              <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Activés</p>
-              <p className="text-2xl font-black text-black">{stats.activated}</p>
+            <div className="bg-emerald-50 rounded-xl p-4 border border-emerald-100">
+              <p className="text-[10px] text-emerald-600 uppercase tracking-wider mb-1 font-bold">Activés</p>
+              <p className="text-2xl font-black text-emerald-700">{stats.activated}</p>
             </div>
-            <div className="flex-1 bg-gray-50 rounded-xl p-4">
-              <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Dispo</p>
-              <p className="text-2xl font-black text-black">{stats.available}</p>
+            <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
+              <p className="text-[10px] text-blue-600 uppercase tracking-wider mb-1 font-bold">En attente</p>
+              <p className="text-2xl font-black text-blue-700">{stats.pending}</p>
+            </div>
+            <div className="bg-gray-100 rounded-xl p-4 border border-gray-200">
+              <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1 font-bold">Vierges</p>
+              <p className="text-2xl font-black text-gray-700">{stats.available}</p>
             </div>
           </div>
 
