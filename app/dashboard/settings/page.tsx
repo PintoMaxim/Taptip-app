@@ -82,12 +82,46 @@ export default async function SettingsPage() {
                 )}
               </div>
               {!stripeStatus.isComplete && (
-                <div className="mt-3 pt-3 border-t border-gray-100">
-                  <p className="text-[10px] text-gray-500 leading-relaxed">
-                    <span className="font-bold text-black">💡 Conseil pour l'inscription :</span><br />
-                    • Choisissez <span className="font-bold">"Particulier"</span> ou <span className="font-bold">"Entreprise individuelle"</span>.<br />
-                    • Pour le site internet, utilisez votre lien TapTip : <CopyProfileLink userId={user.id} />
-                  </p>
+                <div className="mt-6 pt-6 border-t border-gray-100">
+                  <div className="bg-blue-50/50 rounded-2xl p-5 border border-blue-100">
+                    <h3 className="text-xs font-bold text-blue-900 uppercase tracking-widest mb-4 flex items-center gap-2">
+                      <span className="flex h-5 w-5 items-center justify-center bg-blue-600 text-white rounded-full text-[10px]">?</span>
+                      Guide d'activation rapide
+                    </h3>
+                    
+                    <div className="space-y-4">
+                      <div className="flex gap-3">
+                        <span className="text-blue-600 font-bold text-xs mt-0.5">1.</span>
+                        <div>
+                          <p className="text-[11px] font-bold text-blue-900 mb-0.5">Type de structure</p>
+                          <p className="text-[10px] text-blue-700 leading-relaxed">Choisissez <span className="font-bold">"Particulier"</span> ou <span className="font-bold">"Entreprise individuelle"</span>. Pas besoin de SIRET pour débuter.</p>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-3">
+                        <span className="text-blue-600 font-bold text-xs mt-0.5">2.</span>
+                        <div>
+                          <p className="text-[11px] font-bold text-blue-900 mb-0.5">Site Internet</p>
+                          <p className="text-[10px] text-blue-700 leading-relaxed mb-2">Copiez votre lien TapTip et collez-le chez Stripe :</p>
+                          <CopyProfileLink userId={user.id} />
+                        </div>
+                      </div>
+
+                      <div className="flex gap-3">
+                        <span className="text-blue-600 font-bold text-xs mt-0.5">3.</span>
+                        <div>
+                          <p className="text-[11px] font-bold text-blue-900 mb-0.5">Validation</p>
+                          <p className="text-[10px] text-blue-700 leading-relaxed">Renseignez votre <span className="font-bold">RIB</span> et prenez une photo de votre <span className="font-bold">pièce d'identité</span>.</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-5 pt-4 border-t border-blue-100/50">
+                      <p className="text-[9px] text-blue-500 italic text-center">
+                        Compte actif immédiatement après ces étapes.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
