@@ -81,7 +81,7 @@ export default async function SettingsPage() {
                   <StripeConnectButton />
                 )}
               </div>
-              {true && (
+              {!stripeStatus.isComplete && (
                 <div className="mt-6 pt-6 border-t border-gray-100">
                   <div className="bg-blue-50/50 rounded-2xl p-5 border border-blue-100">
                     <h3 className="text-xs font-bold text-blue-900 uppercase tracking-widest mb-4 flex items-center gap-2">
@@ -110,8 +110,8 @@ export default async function SettingsPage() {
                       <div className="flex gap-3">
                         <span className="text-blue-600 font-bold text-xs mt-0.5">3.</span>
                         <div>
-                          <p className="text-[11px] font-bold text-blue-900 mb-0.5">Validation</p>
-                          <p className="text-[10px] text-blue-700 leading-relaxed">Renseignez votre <span className="font-bold">RIB</span> et prenez une photo de votre <span className="font-bold">pièce d'identité</span>.</p>
+                          <p className="text-[11px] font-bold text-blue-900 mb-0.5">Validation & Sécurité</p>
+                          <p className="text-[10px] text-blue-700 leading-relaxed">Renseignez votre <span className="font-bold">RIB</span> et votre <span className="font-bold">pièce d'identité</span>. Pour la sécurité, choisissez l'option <span className="font-bold">"SMS"</span> (plus simple que l'application).</p>
                         </div>
                       </div>
                     </div>
