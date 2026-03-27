@@ -81,7 +81,7 @@ export default async function SettingsPage() {
                   <StripeConnectButton />
                 )}
               </div>
-              {!stripeStatus.isComplete && (
+              {true && (
                 <div className="mt-6 pt-6 border-t border-gray-100">
                   <div className="bg-blue-50/50 rounded-2xl p-5 border border-blue-100">
                     <h3 className="text-xs font-bold text-blue-900 uppercase tracking-widest mb-4 flex items-center gap-2">
