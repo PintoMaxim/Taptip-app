@@ -2,6 +2,7 @@
 
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { sendWelcomeEmail } from './email'
 
 function generateBadgeCode(): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
@@ -115,6 +116,12 @@ export async function activateBadge(code: string) {
   }).eq('code', code.toUpperCase())
   
   if (error) return { error: 'Erreur lors de l\'activation' }
+
+  // Envoi de l'email de bienvenue après l'activation réussie
+  const { data: userData } = await supabase.from('users').select('first_name, email').eq('id', user.id).single()
+  if (userData && userData.email) {
+    await sendWelcomeEmail(userData.email, userData.first_name || 'Partenaire')
+  }
 
   revalidatePath(`/b/${code}`)
   revalidatePath('/admin/badges')
