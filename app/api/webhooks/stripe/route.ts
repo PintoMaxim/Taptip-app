@@ -45,31 +45,35 @@ export async function POST(request: NextRequest) {
 
       // Vérifier que c'est un paiement réussi
       if (session.payment_status === 'paid') {
-        // Extraire l'user_id de l'URL de succès
-        // Format: https://app.taptip.fr/p/USER_ID?success=true
-      const successUrl = session.success_url
-      const userIdMatch = successUrl?.match(/\/p\/([^?]+)/)
-      const userId = userIdMatch?.[1]
+        // 1. Essayer de récupérer l'userId depuis les metadata (plus fiable)
+        let userId = session.metadata?.userId
+
+        // 2. Si pas de metadata, essayer d'extraire de l'URL de succès (ancien système)
+        if (!userId) {
+          const successUrl = session.success_url
+          const userIdMatch = successUrl?.match(/\/p\/([^?]+)/)
+          userId = userIdMatch?.[1]
+        }
 
         if (userId && session.amount_total) {
           // Enregistrer le pourboire dans la base de données
-      const { error } = await supabaseAdmin
-        .from('tips')
-        .insert({
-          user_id: userId,
+          const { error } = await supabaseAdmin
+            .from('tips')
+            .insert({
+              user_id: userId,
               amount: session.amount_total,
               stripe_payment_id: session.payment_intent as string,
               stripe_checkout_session_id: session.id,
-          status: 'completed',
-        })
+              status: 'completed',
+            })
 
-      if (error) {
-        console.error('Error inserting tip:', error)
-      } else {
+          if (error) {
+            console.error('Error inserting tip:', error)
+          } else {
             console.log(`✅ Tip recorded: ${session.amount_total / 100}€ for user ${userId}`)
-      }
+          }
         }
-    }
+      }
       break
     }
 
