@@ -48,19 +48,22 @@ export async function POST(request: NextRequest) {
         // 1. Essayer de récupérer l'userId depuis les metadata (plus fiable)
         let userId = session.metadata?.userId
 
-        // 2. Si pas de metadata, essayer d'extraire de l'URL de succès (ancien système qui marchait)
+        // 2. Si pas de metadata, essayer d'extraire de l'URL de succès
         if (!userId) {
           const successUrl = session.success_url
           const userIdMatch = successUrl?.match(/\/p\/([^?]+)/)
           userId = userIdMatch?.[1]
         }
 
-        // 3. Si toujours rien, essayer de trouver l'utilisateur par son stripe_account_id (sécurité ultime)
-        if (!userId && session.stripe_account) {
+        // 3. Si toujours rien, essayer de trouver l'utilisateur par son stripe_account_id
+        // Note: session.stripe_account est disponible sur les événements de comptes connectés
+        const stripeAccountId = (session as any).stripe_account || event.account
+        
+        if (!userId && stripeAccountId) {
           const { data: userByStripe } = await supabaseAdmin
             .from('users')
             .select('id')
-            .eq('stripe_account_id', session.stripe_account)
+            .eq('stripe_account_id', stripeAccountId)
             .single()
           userId = userByStripe?.id
         }
