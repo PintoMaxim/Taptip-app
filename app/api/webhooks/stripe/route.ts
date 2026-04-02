@@ -15,7 +15,10 @@ export async function POST(request: NextRequest) {
   const body = await request.text()
   const signature = request.headers.get('stripe-signature')
 
+  console.log('🔔 Webhook Stripe reçu !')
+
   if (!signature) {
+    console.error('❌ Signature Stripe manquante')
     return NextResponse.json(
       { error: 'Missing stripe-signature header' },
       { status: 400 }
@@ -30,8 +33,9 @@ export async function POST(request: NextRequest) {
       signature,
       process.env.STRIPE_WEBHOOK_SECRET!
     )
+    console.log(`✅ Événement vérifié : ${event.type}`)
   } catch (err) {
-    console.error('Webhook signature verification failed:', err)
+    console.error('❌ Échec de la vérification de la signature :', err)
     return NextResponse.json(
       { error: 'Webhook signature verification failed' },
       { status: 400 }
@@ -42,22 +46,25 @@ export async function POST(request: NextRequest) {
   switch (event.type) {
     case 'checkout.session.completed': {
       const session = event.data.object as Stripe.Checkout.Session
+      console.log('📦 Session de paiement complétée :', session.id)
 
       // Vérifier que c'est un paiement réussi
       if (session.payment_status === 'paid') {
         // 1. Essayer de récupérer l'userId depuis les metadata (plus fiable)
         let userId = session.metadata?.userId
+        console.log('🔍 Recherche userId dans metadata :', userId)
 
         // 2. Si pas de metadata, essayer d'extraire de l'URL de succès
         if (!userId) {
           const successUrl = session.success_url
           const userIdMatch = successUrl?.match(/\/p\/([^?]+)/)
           userId = userIdMatch?.[1]
+          console.log('🔍 Recherche userId dans URL :', userId)
         }
 
         // 3. Si toujours rien, essayer de trouver l'utilisateur par son stripe_account_id
-        // Note: session.stripe_account est disponible sur les événements de comptes connectés
         const stripeAccountId = (session as any).stripe_account || event.account
+        console.log('🔍 Compte Stripe concerné :', stripeAccountId)
         
         if (!userId && stripeAccountId) {
           const { data: userByStripe } = await supabaseAdmin
@@ -66,9 +73,11 @@ export async function POST(request: NextRequest) {
             .eq('stripe_account_id', stripeAccountId)
             .single()
           userId = userByStripe?.id
+          console.log('🔍 UserId trouvé via stripe_account_id :', userId)
         }
 
         if (userId && session.amount_total) {
+          console.log(`💰 Enregistrement du pourboire de ${session.amount_total / 100}€ pour ${userId}`)
           // Enregistrer le pourboire dans la base de données
           const { error } = await supabaseAdmin
             .from('tips')
@@ -81,38 +90,36 @@ export async function POST(request: NextRequest) {
             })
 
           if (error) {
-            console.error('Error inserting tip:', error)
+            console.error('❌ Erreur insertion Supabase :', error)
           } else {
-            console.log(`✅ Tip recorded: ${session.amount_total / 100}€ for user ${userId}`)
+            console.log(`✅ Pourboire enregistré avec succès !`)
           }
+        } else {
+          console.warn('⚠️ Impossible de déterminer l\'utilisateur ou le montant')
         }
       }
       break
     }
 
     case 'account.updated': {
-      // Un compte Stripe Connect a été mis à jour
       const account = event.data.object as Stripe.Account
-      
-      // Vérifier si l'onboarding est complet
       if (account.charges_enabled && account.payouts_enabled) {
-        // Mettre à jour le statut dans la base de données
         const { error } = await supabaseAdmin
           .from('users')
           .update({ stripe_onboarding_complete: true })
           .eq('stripe_account_id', account.id)
 
         if (error) {
-          console.error('Error updating Stripe status:', error)
+          console.error('❌ Erreur mise à jour onboarding :', error)
         } else {
-          console.log(`✅ Stripe onboarding completed for account ${account.id}`)
+          console.log(`✅ Onboarding complété pour ${account.id}`)
         }
       }
       break
     }
 
     default:
-      console.log(`Unhandled event type: ${event.type}`)
+      console.log(`ℹ️ Événement non géré : ${event.type}`)
   }
 
   return NextResponse.json({ received: true })
