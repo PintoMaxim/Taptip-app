@@ -13,22 +13,30 @@ export default function CopyProfileLink({ userId }: { userId: string }) {
   }
 
   return (
-    <span 
+    <span
       onClick={handleCopy}
-      className="relative font-mono bg-gray-100 px-2 py-0.5 rounded cursor-pointer active:bg-gray-200 transition-all inline-flex items-center gap-2 text-black font-medium group"
+      className="relative inline-flex items-center gap-2 px-2 py-1 rounded cursor-pointer transition-all duration-200"
+      style={{
+        fontFamily: 'var(--font-jetbrains), monospace',
+        fontSize: '11px',
+        background: '#141414',
+        border: '1px solid rgba(255,255,255,0.1)',
+        color: copied ? 'oklch(0.78 0.18 155)' : '#8b8b8d',
+      }}
       title="Cliquer pour copier"
     >
       {url}
-      <svg 
-        width="12" 
-        height="12" 
-        viewBox="0 0 24 24" 
-        fill="none" 
-        stroke="currentColor" 
-        strokeWidth="2.5" 
-        strokeLinecap="round" 
+      <svg
+        width="12"
+        height="12"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
         strokeLinejoin="round"
-        className={`transition-all duration-300 ${copied ? 'text-emerald-500 scale-110' : 'text-gray-400'}`}
+        className="transition-all duration-300"
+        style={{ color: copied ? 'oklch(0.78 0.18 155)' : '#4a4a4c' }}
       >
         {copied ? (
           <polyline points="20 6 9 17 4 12" />
@@ -39,9 +47,11 @@ export default function CopyProfileLink({ userId }: { userId: string }) {
           </>
         )}
       </svg>
-      
       {copied && (
-        <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-1 rounded-md animate-in fade-in zoom-in duration-200">
+        <span
+          className="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] px-2 py-1 rounded-md animate-fade-in-up"
+          style={{ background: '#0c0c0d', color: 'oklch(0.78 0.18 155)', border: '1px solid rgba(255,255,255,0.1)' }}
+        >
           Copié !
         </span>
       )}

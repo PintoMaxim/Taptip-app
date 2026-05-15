@@ -16,6 +16,19 @@ interface ProfileFormProps {
   userId: string
 }
 
+const inputStyle = {
+  width: '100%',
+  height: '48px',
+  padding: '0 16px',
+  borderRadius: '12px',
+  background: '#0c0c0d',
+  border: '1px solid rgba(255,255,255,0.08)',
+  color: '#f4f4f4',
+  fontSize: '15px',
+  outline: 'none',
+  transition: 'border-color 200ms',
+}
+
 export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
   const [formData, setFormData] = useState<ProfileData>({
     first_name: initialData?.first_name || '',
@@ -26,6 +39,7 @@ export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
   const [avatarUrl, setAvatarUrl] = useState(initialData?.avatar_url || '')
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [focusedField, setFocusedField] = useState<string | null>(null)
 
   const userInitial = formData.first_name?.[0]?.toUpperCase() || initialData?.email?.[0]?.toUpperCase() || '?'
 
@@ -52,31 +66,108 @@ export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
     setTimeout(() => setMessage(null), 3000)
   }
 
+  const getFocusStyle = (field: string) =>
+    focusedField === field
+      ? { ...inputStyle, borderColor: 'oklch(0.78 0.18 155)' }
+      : inputStyle
+
   return (
     <div className="w-full">
       {message && (
-        <div className={`mb-5 p-3 rounded-xl text-center text-xs font-medium ${message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+        <div
+          className="mb-5 p-3 rounded-xl text-center text-xs font-medium"
+          style={
+            message.type === 'success'
+              ? { background: 'oklch(0.78 0.18 155 / 0.12)', color: 'oklch(0.78 0.18 155)', border: '1px solid oklch(0.78 0.18 155 / 0.3)' }
+              : { background: 'rgba(239,68,68,0.1)', color: '#f87171', border: '1px solid rgba(239,68,68,0.3)' }
+          }
+        >
           {message.text}
         </div>
       )}
 
       <div className="mb-6">
-        <AvatarEditor currentAvatarUrl={avatarUrl} userInitial={userInitial} onSuccess={handleAvatarSuccess} onError={(m) => setMessage({ type: 'error', text: m })} />
+        <AvatarEditor
+          currentAvatarUrl={avatarUrl}
+          userInitial={userInitial}
+          onSuccess={handleAvatarSuccess}
+          onError={(m) => setMessage({ type: 'error', text: m })}
+        />
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input type="text" name="first_name" value={formData.first_name} onChange={handleChange} placeholder="Prénom" className="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 text-black font-medium" />
-        <input type="text" name="last_name" value={formData.last_name} onChange={handleChange} placeholder="Nom" className="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 text-black font-medium" />
-        <input type="text" name="job_title" value={formData.job_title} onChange={handleChange} placeholder="Métier" className="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 text-black font-medium" />
-        <textarea name="bio" value={formData.bio} onChange={handleChange} placeholder="Bio" className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 resize-none text-black font-medium" rows={3} maxLength={120} />
-        <button type="submit" disabled={saving} className="w-full h-12 rounded-xl bg-black text-white font-semibold active:scale-[0.98] disabled:opacity-50">
-          {saving ? 'Sauvegarde...' : 'Sauvegarder'}
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <input
+          type="text"
+          name="first_name"
+          value={formData.first_name}
+          onChange={handleChange}
+          placeholder="Prénom"
+          style={getFocusStyle('first_name')}
+          onFocus={() => setFocusedField('first_name')}
+          onBlur={() => setFocusedField(null)}
+        />
+        <input
+          type="text"
+          name="last_name"
+          value={formData.last_name}
+          onChange={handleChange}
+          placeholder="Nom"
+          style={getFocusStyle('last_name')}
+          onFocus={() => setFocusedField('last_name')}
+          onBlur={() => setFocusedField(null)}
+        />
+        <input
+          type="text"
+          name="job_title"
+          value={formData.job_title}
+          onChange={handleChange}
+          placeholder="Métier"
+          style={getFocusStyle('job_title')}
+          onFocus={() => setFocusedField('job_title')}
+          onBlur={() => setFocusedField(null)}
+        />
+        <textarea
+          name="bio"
+          value={formData.bio}
+          onChange={handleChange}
+          placeholder="Bio"
+          rows={3}
+          maxLength={120}
+          style={{
+            ...getFocusStyle('bio'),
+            height: 'auto',
+            padding: '12px 16px',
+            resize: 'none',
+          }}
+          onFocus={() => setFocusedField('bio')}
+          onBlur={() => setFocusedField(null)}
+        />
+        <button
+          type="submit"
+          disabled={saving}
+          className="w-full h-12 rounded-xl font-semibold text-[15px] active:scale-[0.98] transition-all duration-200 disabled:opacity-50"
+          style={{ background: 'oklch(0.78 0.18 155)', color: '#000' }}
+        >
+          {saving ? 'Sauvegarde…' : 'Sauvegarder'}
         </button>
       </form>
 
-      <div className="mt-6 pt-5 border-t border-gray-100 text-center">
-        <p className="text-[10px] text-gray-400 uppercase mb-2">Votre lien</p>
-        <code className="text-[10px] text-gray-500 break-all">app.taptip.fr/p/{userId}</code>
+      <div
+        className="mt-6 pt-5 text-center"
+        style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}
+      >
+        <p
+          className="text-[10px] uppercase mb-2 tracking-widest"
+          style={{ fontFamily: 'var(--font-jetbrains), monospace', color: '#4a4a4c' }}
+        >
+          Votre lien
+        </p>
+        <code
+          className="text-[10px] break-all"
+          style={{ color: '#8b8b8d', fontFamily: 'var(--font-jetbrains), monospace' }}
+        >
+          app.taptip.fr/p/{userId}
+        </code>
       </div>
     </div>
   )

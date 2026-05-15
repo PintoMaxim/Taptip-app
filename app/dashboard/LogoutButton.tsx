@@ -15,7 +15,8 @@ export default function LogoutButton() {
   return (
     <button
       onClick={handleLogout}
-      className="w-full text-left text-red-500 text-sm font-medium"
+      className="w-full text-left text-sm font-medium transition-colors duration-200"
+      style={{ color: '#ef4444' }}
     >
       Se déconnecter
     </button>

@@ -9,13 +9,27 @@ import CopyProfileLink from './CopyProfileLink'
 import Link from 'next/link'
 import Image from 'next/image'
 
+const sectionLabel: React.CSSProperties = {
+  fontSize: '10px',
+  fontFamily: 'var(--font-jetbrains), monospace',
+  textTransform: 'uppercase',
+  letterSpacing: '0.1em',
+  color: '#4a4a4c',
+  marginBottom: '8px',
+  marginLeft: '4px',
+}
+
+const card: React.CSSProperties = {
+  background: '#0c0c0d',
+  border: '1px solid rgba(255,255,255,0.08)',
+  borderRadius: '12px',
+}
+
 export default async function SettingsPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user) {
-    redirect('/login')
-  }
+  if (!user) redirect('/login')
 
   const [stripeStatus, profileResult] = await Promise.all([
     checkStripeStatus(),
@@ -23,9 +37,7 @@ export default async function SettingsPage() {
   ])
 
   const profile = profileResult.profile
-  const referralCode = profile?.referral_code || ''
 
-  // Récupérer la date du premier badge activé pour le délai de 7 jours
   const { data: firstBadge } = await supabase
     .from('badges')
     .select('activated_at')
@@ -35,37 +47,39 @@ export default async function SettingsPage() {
     .single()
 
   return (
-    <div className="min-h-screen bg-white flex justify-center">
-      {/* Container mobile fixe */}
-      <div className="w-full max-w-[390px] min-h-screen bg-white">
+    <div className="min-h-[100dvh] flex justify-center" style={{ background: '#050505' }}>
+      <div className="w-full max-w-[390px] min-h-[100dvh]" style={{ background: '#050505' }}>
+
         {/* Header */}
-        <header className="px-5 py-4 flex items-center gap-3 border-b border-gray-100">
-          <Image
-            src="/logo.png"
-            alt="Logo"
-            width={28}
-            height={28}
-          />
-          <h1 className="text-base font-semibold text-black">Paramètres</h1>
+        <header
+          className="px-5 py-4 flex items-center gap-3 sticky top-0 z-10"
+          style={{
+            background: 'rgba(5,5,5,0.9)',
+            backdropFilter: 'blur(12px)',
+            borderBottom: '1px solid rgba(255,255,255,0.06)',
+          }}
+        >
+          <Image src="/logo.png" alt="Logo" width={28} height={28} />
+          <h1 className="text-base font-semibold" style={{ color: '#f4f4f4' }}>Paramètres</h1>
         </header>
 
-        <main className="px-5 py-5 space-y-5">
+        <main className="px-5 py-5 space-y-6">
+
           {/* Section Paiements */}
           <section>
-            <h2 className="text-[10px] text-gray-400 uppercase tracking-wider mb-2 ml-1">
-              Paiements
-            </h2>
-            <div className="bg-gray-50 rounded-xl p-4">
+            <p style={sectionLabel}>Paiements</p>
+            <div style={card} className="p-4">
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center">
-                  <span className="text-white text-base">💳</span>
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{ background: '#141414', border: '1px solid rgba(255,255,255,0.08)' }}
+                >
+                  <span className="text-base">💳</span>
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-black">Stripe Connect</p>
-                  <p className="text-[10px] text-gray-400">
-                    {stripeStatus.isComplete 
-                      ? 'Compte connecté' 
-                      : 'Non configuré'}
+                  <p className="text-sm font-medium" style={{ color: '#f4f4f4' }}>Stripe Connect</p>
+                  <p className="text-[10px]" style={{ color: stripeStatus.isComplete ? 'oklch(0.78 0.18 155)' : '#8b8b8d' }}>
+                    {stripeStatus.isComplete ? '● Compte connecté' : 'Non configuré'}
                   </p>
                 </div>
                 {stripeStatus.isComplete ? (
@@ -73,7 +87,8 @@ export default async function SettingsPage() {
                     href="https://dashboard.stripe.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-3 py-1.5 bg-gray-200 text-black text-xs font-medium rounded-lg"
+                    className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200"
+                    style={{ background: '#141414', border: '1px solid rgba(255,255,255,0.12)', color: '#f4f4f4' }}
                   >
                     Gérer
                   </a>
@@ -81,46 +96,65 @@ export default async function SettingsPage() {
                   <StripeConnectButton />
                 )}
               </div>
+
+              {/* Guide d'activation Stripe */}
               {!stripeStatus.isComplete && (
-                <div className="mt-6 pt-6 border-t border-gray-100">
-                  <div className="bg-blue-50/50 rounded-2xl p-5 border border-blue-100">
-                    <h3 className="text-xs font-bold text-blue-900 uppercase tracking-widest mb-4 flex items-center gap-2">
-                      <span className="flex h-5 w-5 items-center justify-center bg-blue-600 text-white rounded-full text-[10px]">?</span>
-                      Guide d'activation rapide
-                    </h3>
-                    
-                    <div className="space-y-4">
-                      <div className="flex gap-3">
-                        <span className="text-blue-600 font-bold text-xs mt-0.5">1.</span>
+                <div
+                  className="mt-4 pt-4 rounded-xl p-4"
+                  style={{
+                    background: 'oklch(0.78 0.18 155 / 0.06)',
+                    border: '1px solid oklch(0.78 0.18 155 / 0.2)',
+                    marginTop: '12px',
+                  }}
+                >
+                  <h3
+                    className="text-xs font-bold uppercase tracking-widest mb-4 flex items-center gap-2"
+                    style={{ color: 'oklch(0.78 0.18 155)' }}
+                  >
+                    <span
+                      className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold"
+                      style={{ background: 'oklch(0.78 0.18 155)', color: '#000' }}
+                    >
+                      ?
+                    </span>
+                    Guide d&rsquo;activation rapide
+                  </h3>
+                  <div className="space-y-4">
+                    {[
+                      {
+                        n: '1.',
+                        title: 'Type de structure',
+                        text: <>Choisissez <strong>&quot;Particulier&quot;</strong> ou <strong>&quot;Entreprise individuelle&quot;</strong>. Pas besoin de SIRET pour débuter.</>,
+                      },
+                      {
+                        n: '2.',
+                        title: 'Site Internet',
+                        text: <>Copiez votre lien TapTip et collez-le chez Stripe :<br /><span className="mt-2 inline-block"><CopyProfileLink userId={user.id} /></span></>,
+                      },
+                      {
+                        n: '3.',
+                        title: 'Validation & Sécurité',
+                        text: <>Renseignez votre <strong>RIB</strong> et votre <strong>pièce d&rsquo;identité</strong>. Pour la sécurité, choisissez l&rsquo;option <strong>&quot;SMS&quot;</strong> (plus simple que l&rsquo;application).</>,
+                      },
+                    ].map(({ n, title, text }) => (
+                      <div key={n} className="flex gap-3">
+                        <span
+                          className="font-bold text-xs mt-0.5"
+                          style={{ color: 'oklch(0.78 0.18 155)', fontFamily: 'var(--font-jetbrains), monospace' }}
+                        >
+                          {n}
+                        </span>
                         <div>
-                          <p className="text-[11px] font-bold text-blue-900 mb-0.5">Type de structure</p>
-                          <p className="text-[10px] text-blue-700 leading-relaxed">Choisissez <span className="font-bold">"Particulier"</span> ou <span className="font-bold">"Entreprise individuelle"</span>. Pas besoin de SIRET pour débuter.</p>
+                          <p className="text-[11px] font-bold mb-0.5" style={{ color: '#f4f4f4' }}>{title}</p>
+                          <p className="text-[10px] leading-relaxed" style={{ color: '#8b8b8d' }}>{text}</p>
                         </div>
                       </div>
-
-                      <div className="flex gap-3">
-                        <span className="text-blue-600 font-bold text-xs mt-0.5">2.</span>
-                        <div>
-                          <p className="text-[11px] font-bold text-blue-900 mb-0.5">Site Internet</p>
-                          <p className="text-[10px] text-blue-700 leading-relaxed mb-2">Copiez votre lien TapTip et collez-le chez Stripe :</p>
-                          <CopyProfileLink userId={user.id} />
-                        </div>
-                      </div>
-
-                      <div className="flex gap-3">
-                        <span className="text-blue-600 font-bold text-xs mt-0.5">3.</span>
-                        <div>
-                          <p className="text-[11px] font-bold text-blue-900 mb-0.5">Validation & Sécurité</p>
-                          <p className="text-[10px] text-blue-700 leading-relaxed">Renseignez votre <span className="font-bold">RIB</span> et votre <span className="font-bold">pièce d'identité</span>. Pour la sécurité, choisissez l'option <span className="font-bold">"SMS"</span> (plus simple que l'application).</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="mt-5 pt-4 border-t border-blue-100/50">
-                      <p className="text-[9px] text-blue-500 italic text-center">
-                        Compte actif immédiatement après ces étapes.
-                      </p>
-                    </div>
+                    ))}
+                  </div>
+                  <div className="mt-4 pt-3" style={{ borderTop: '1px solid oklch(0.78 0.18 155 / 0.15)' }}>
+                    <p className="text-[9px] text-center italic" style={{ color: '#4a4a4c' }}>
+                      Compte actif immédiatement après ces étapes.
+                    </p>
                   </div>
                 </div>
               )}
@@ -129,32 +163,34 @@ export default async function SettingsPage() {
 
           {/* Section Profil */}
           <section>
-            <h2 className="text-[10px] text-gray-400 uppercase tracking-wider mb-2 ml-1">
-              Profil
-            </h2>
+            <p style={sectionLabel}>Profil</p>
             <Link
               href="/dashboard/profile"
-              className="block bg-gray-50 rounded-xl p-4 active:scale-[0.98] transition-transform"
+              className="block p-4 active:scale-[0.98] transition-all duration-200"
+              style={{ ...card, display: 'block' }}
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-black">Modifier mon profil</p>
-                  <p className="text-[10px] text-gray-400">Photo, nom, métier...</p>
+                  <p className="text-sm font-medium" style={{ color: '#f4f4f4' }}>Modifier mon profil</p>
+                  <p className="text-[10px]" style={{ color: '#8b8b8d' }}>Photo, nom, métier…</p>
                 </div>
-                <span className="text-gray-300 text-sm">→</span>
+                <span style={{ color: '#4a4a4c' }}>→</span>
               </div>
             </Link>
           </section>
 
           {/* Section Compte */}
           <section>
-            <h2 className="text-[10px] text-gray-400 uppercase tracking-wider mb-2 ml-1">
-              Compte
-            </h2>
-            <div className="bg-gray-50 rounded-xl divide-y divide-gray-100">
-              <div className="p-4">
-                <p className="text-sm font-medium text-black">Email</p>
-                <p className="text-[10px] text-gray-400">{user.email}</p>
+            <p style={sectionLabel}>Compte</p>
+            <div style={{ ...card, overflow: 'hidden' }}>
+              <div className="p-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                <p className="text-sm font-medium" style={{ color: '#f4f4f4' }}>Email</p>
+                <p
+                  className="text-[10px] mt-0.5"
+                  style={{ color: '#8b8b8d', fontFamily: 'var(--font-jetbrains), monospace' }}
+                >
+                  {user.email}
+                </p>
               </div>
               <div className="p-4">
                 <LogoutButton />
@@ -162,37 +198,41 @@ export default async function SettingsPage() {
             </div>
           </section>
 
-          {/* Section Admin (seulement pour l'admin) */}
+          {/* Section Admin */}
           {user.email === (process.env.ADMIN_EMAIL || 'contact.taptip@gmail.com') && (
             <section>
-              <h2 className="text-[10px] text-yellow-600 uppercase tracking-wider mb-2 ml-1">
-                Administration
-              </h2>
+              <p style={{ ...sectionLabel, color: 'oklch(0.78 0.18 155)' }}>Administration</p>
               <Link
                 href="/admin/badges"
-                className="block bg-yellow-50 border border-yellow-200 rounded-xl p-4 active:scale-[0.98] transition-transform"
+                className="block p-4 active:scale-[0.98] transition-all duration-200"
+                style={{
+                  ...card,
+                  display: 'block',
+                  background: 'oklch(0.78 0.18 155 / 0.06)',
+                  border: '1px solid oklch(0.78 0.18 155 / 0.2)',
+                }}
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-black">🏷️ Gestion des badges</p>
-                    <p className="text-[10px] text-gray-500">Générer et suivre les badges NFC</p>
+                    <p className="text-sm font-medium" style={{ color: '#f4f4f4' }}>🏷️ Gestion des badges</p>
+                    <p className="text-[10px]" style={{ color: '#8b8b8d' }}>Générer et suivre les badges NFC</p>
                   </div>
-                  <span className="text-yellow-500 text-sm">→</span>
+                  <span style={{ color: 'oklch(0.78 0.18 155)' }}>→</span>
                 </div>
               </Link>
             </section>
           )}
 
-          {/* Footer */}
-          <p className="text-center text-[10px] text-gray-300 pt-4">
+          <p
+            className="text-center text-[10px] pt-2"
+            style={{ color: '#4a4a4c', fontFamily: 'var(--font-jetbrains), monospace' }}
+          >
             TapTip v1.0
           </p>
 
-          {/* Espace pour la barre de navigation */}
           <div className="h-20" />
         </main>
 
-        {/* Barre de navigation */}
         <BottomNav />
       </div>
     </div>

@@ -10,16 +10,13 @@ export default function StripeConnectButton() {
   const handleConnect = async () => {
     setLoading(true)
     setError(null)
-    
     try {
       const result = await getStripeOnboardingLink()
-    
       if (result.error) {
         setError(result.error)
-      setLoading(false)
-      return
-    }
-
+        setLoading(false)
+        return
+      }
       if (result.url) {
         window.location.href = result.url
       } else {
@@ -35,15 +32,19 @@ export default function StripeConnectButton() {
 
   return (
     <div className="flex flex-col items-end gap-1">
-    <button
-      onClick={handleConnect}
-      disabled={loading}
-      className="px-3 py-1.5 rounded-lg bg-black text-white text-xs font-medium active:scale-[0.98] transition-transform disabled:opacity-50"
-    >
-      {loading ? '...' : 'Connecter'}
-    </button>
+      <button
+        onClick={handleConnect}
+        disabled={loading}
+        className="px-3 py-1.5 rounded-lg text-xs font-semibold active:scale-[0.98] transition-all duration-200 disabled:opacity-50"
+        style={{
+          background: 'oklch(0.78 0.18 155)',
+          color: '#000',
+        }}
+      >
+        {loading ? '…' : 'Connecter'}
+      </button>
       {error && (
-        <p className="text-[10px] text-red-500 max-w-[150px] text-right">{error}</p>
+        <p className="text-[10px] text-red-400 max-w-[150px] text-right">{error}</p>
       )}
     </div>
   )

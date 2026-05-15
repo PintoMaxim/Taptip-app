@@ -14,9 +14,7 @@ export default async function DashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user) {
-    redirect('/login')
-  }
+  if (!user) redirect('/login')
 
   const [profileResult, stripeStatus, stats, activities] = await Promise.all([
     getProfile(),
@@ -32,97 +30,170 @@ export default async function DashboardPage() {
     const stars = []
     const floorRating = Math.floor(rating)
     const hasHalfStar = rating % 1 >= 0.5
-
     for (let i = 1; i <= 5; i++) {
       if (i <= floorRating) {
-        stars.push(<span key={i} className="text-amber-400">★</span>)
+        stars.push(<span key={i} style={{ color: '#f59e0b' }}>★</span>)
       } else if (i === floorRating + 1 && hasHalfStar) {
         stars.push(
-          <span key={i} className="relative text-gray-600">
+          <span key={i} className="relative" style={{ color: '#4a4a4c' }}>
             ★
-            <span className="absolute left-0 top-0 text-amber-400 overflow-hidden w-[50%]">★</span>
+            <span className="absolute left-0 top-0 overflow-hidden w-[50%]" style={{ color: '#f59e0b' }}>★</span>
           </span>
         )
       } else {
-        stars.push(<span key={i} className="text-gray-600">★</span>)
+        stars.push(<span key={i} style={{ color: '#4a4a4c' }}>★</span>)
       }
     }
     return stars
   }
 
   return (
-    <div className="min-h-[100dvh] bg-white flex justify-center">
-      <div className="w-full max-w-[390px] min-h-[100dvh] bg-white flex flex-col relative">
+    <div className="min-h-[100dvh] flex justify-center" style={{ background: '#050505' }}>
+      <div className="w-full max-w-[390px] min-h-[100dvh] flex flex-col relative" style={{ background: '#050505' }}>
         <PullToRefresh>
-          <header className="px-5 py-4 flex items-center justify-between border-b border-gray-100 sticky top-0 bg-white z-10">
+          {/* Header */}
+          <header
+            className="px-5 py-4 flex items-center justify-between sticky top-0 z-10"
+            style={{
+              background: 'rgba(5,5,5,0.9)',
+              backdropFilter: 'blur(12px)',
+              borderBottom: '1px solid rgba(255,255,255,0.06)',
+            }}
+          >
             <div className="flex items-center gap-3">
               <Image src="/logo.png" alt="Logo" width={32} height={32} priority />
-              <span className="text-base font-semibold text-black">Bonjour, {firstName}</span>
+              <span className="text-base font-semibold" style={{ color: '#f4f4f4' }}>
+                Bonjour, {firstName}
+              </span>
             </div>
-            
-            <Link href="/dashboard/profile" className="w-10 h-10 rounded-full overflow-hidden bg-gray-100">
+            <Link
+              href="/dashboard/profile"
+              className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0"
+              style={{ background: '#141414', border: '1px solid rgba(255,255,255,0.1)' }}
+            >
               {profile?.avatar_url ? (
                 <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <span className="text-gray-400 text-sm font-bold">{firstName[0]}</span>
+                  <span className="text-sm font-bold" style={{ color: '#8b8b8d' }}>{firstName[0]}</span>
                 </div>
               )}
             </Link>
           </header>
 
-          <main className="px-5 py-5 space-y-5">
-            <div className="bg-black rounded-2xl p-5 text-white relative overflow-hidden">
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 opacity-10">
+          <main className="px-5 py-5 space-y-4">
+            {/* Card Total reçu */}
+            <div
+              className="rounded-2xl p-5 relative overflow-hidden"
+              style={{
+                background: '#0c0c0d',
+                border: '1px solid rgba(255,255,255,0.1)',
+                boxShadow: '0 0 40px oklch(0.78 0.18 155 / 0.06)',
+              }}
+            >
+              {/* Logo watermark */}
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 opacity-[0.06]">
                 <Image src="/logo.png" alt="" width={80} height={80} className="invert" />
               </div>
               <div className="relative z-10">
-                <p className="text-gray-400 text-xs mb-1">Total reçu</p>
-                <p className="text-3xl font-bold mb-5">{stats.totalReceived.toFixed(2)}€</p>
+                <p
+                  className="text-xs mb-1"
+                  style={{ color: '#8b8b8d', fontFamily: 'var(--font-jetbrains), monospace', textTransform: 'uppercase', letterSpacing: '0.08em' }}
+                >
+                  Total reçu
+                </p>
+                <p
+                  className="text-3xl font-bold mb-5"
+                  style={{ color: '#f4f4f4', fontFamily: 'var(--font-jetbrains), monospace' }}
+                >
+                  {stats.totalReceived.toFixed(2)}€
+                </p>
                 <div className="flex gap-6">
                   <div>
-                    <p className="text-gray-500 text-[10px] uppercase tracking-wider mb-1">Note moyenne</p>
+                    <p
+                      className="text-[10px] uppercase tracking-wider mb-1"
+                      style={{ color: '#4a4a4c', fontFamily: 'var(--font-jetbrains), monospace' }}
+                    >
+                      Note moyenne
+                    </p>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-lg font-bold">{stats.averageRating || '-'}</span>
+                      <span className="text-lg font-bold" style={{ color: '#f4f4f4' }}>
+                        {stats.averageRating || '-'}
+                      </span>
                       <div className="flex text-xs">{renderStars(stats.averageRating)}</div>
                     </div>
                   </div>
                   <div>
-                    <p className="text-gray-500 text-[10px] uppercase tracking-wider mb-1">Avis reçus</p>
-                    <span className="text-lg font-bold">{stats.reviewCount}</span>
+                    <p
+                      className="text-[10px] uppercase tracking-wider mb-1"
+                      style={{ color: '#4a4a4c', fontFamily: 'var(--font-jetbrains), monospace' }}
+                    >
+                      Avis reçus
+                    </p>
+                    <span className="text-lg font-bold" style={{ color: '#f4f4f4' }}>
+                      {stats.reviewCount}
+                    </span>
                   </div>
                 </div>
               </div>
             </div>
 
+            {/* Quick actions */}
             <div className="flex gap-3">
               <ShareButton userId={user.id} />
-              <a href="https://dashboard.stripe.com" target="_blank" rel="noopener noreferrer" className="flex-1 h-16 flex flex-col items-center justify-center gap-1.5 bg-gray-50 rounded-xl border border-gray-100 active:scale-[0.98] transition-transform text-gray-600">
+              <a
+                href="https://dashboard.stripe.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 h-16 flex flex-col items-center justify-center gap-1.5 rounded-xl active:scale-[0.98] transition-all duration-200"
+                style={{
+                  background: '#0c0c0d',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  color: '#8b8b8d',
+                }}
+              >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="1" y="4" width="22" height="16" rx="2" ry="2" /><line x1="1" y1="10" x2="23" y2="10" />
                 </svg>
-                <span className="text-xs font-medium text-black">Virements</span>
+                <span className="text-xs font-medium" style={{ color: '#f4f4f4' }}>Virements</span>
               </a>
             </div>
 
+            {/* Banner Stripe non configuré */}
             {!stripeStatus.isComplete && (
-              <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
+              <div
+                className="rounded-xl p-4"
+                style={{ background: '#0c0c0d', border: '1px solid rgba(255,255,255,0.08)' }}
+              >
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-black flex items-center justify-center">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <div
+                    className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                    style={{ background: 'oklch(0.78 0.18 155)', }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                       <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
                     </svg>
                   </div>
                   <div className="flex-1">
-                    <p className="text-xs font-medium text-black">Configurez vos paiements</p>
-                    <p className="text-[10px] text-gray-500">Pour recevoir des pourboires</p>
+                    <p className="text-xs font-medium" style={{ color: '#f4f4f4' }}>Configurez vos paiements</p>
+                    <p className="text-[10px]" style={{ color: '#8b8b8d' }}>Pour recevoir des pourboires</p>
                   </div>
-                  <Link href="/dashboard/settings" className="px-3 py-1.5 bg-black text-white text-xs font-semibold rounded-lg">Configurer</Link>
+                  <Link
+                    href="/dashboard/settings"
+                    className="px-3 py-1.5 rounded-lg text-xs font-semibold"
+                    style={{ background: 'oklch(0.78 0.18 155)', color: '#000' }}
+                  >
+                    Configurer
+                  </Link>
                 </div>
               </div>
             )}
 
-            <section><ActivityList activities={activities} initialLimit={5} /></section>
+            {/* Activité */}
+            <section>
+              <ActivityList activities={activities} initialLimit={5} />
+            </section>
+
             <div className="h-20" />
           </main>
         </PullToRefresh>
