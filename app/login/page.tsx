@@ -52,7 +52,6 @@ export default function LoginPage() {
       }
     }
 
-    // Connexion automatique après inscription
     if (!data.session) {
       await supabase.auth.signInWithPassword({ email, password })
     }
@@ -60,16 +59,65 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center">
-      <div className="w-full max-w-[390px] min-h-screen bg-white flex flex-col items-center justify-center px-6">
-        <div className="mb-10"><Image src="/logo.png" alt="Logo" width={100} height={100} priority /></div>
-        <form className="flex w-full flex-col gap-4">
-          <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="h-14 w-full rounded-xl border-2 border-gray-200 px-4 focus:border-black focus:outline-none text-black" required />
-          <input type="password" placeholder="Mot de passe" value={password} onChange={(e) => setPassword(e.target.value)} className="h-14 w-full rounded-xl border-2 border-gray-200 px-4 focus:border-black focus:outline-none text-black" required />
-          {error && <p className="text-sm text-red-500 text-center">{error}</p>}
-          <button type="submit" onClick={handleLogin} disabled={loading} className="h-14 w-full rounded-xl bg-black text-white font-semibold active:scale-[0.98] disabled:opacity-50">Se connecter</button>
-          <button type="button" onClick={handleSignUp} disabled={loading} className="h-14 w-full rounded-xl border-2 border-black text-black font-semibold active:scale-[0.98] disabled:opacity-50">S'inscrire</button>
+    <div className="min-h-[100dvh] bg-[#050505] flex justify-center">
+      <div className="w-full max-w-[390px] min-h-[100dvh] flex flex-col items-center justify-center px-6 page-transition">
+
+        {/* Logo */}
+        <div className="mb-12">
+          <Image src="/logo.png" alt="TapTip" width={90} height={90} priority />
+        </div>
+
+        {/* Form */}
+        <form className="flex w-full flex-col gap-3">
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="h-14 w-full rounded-xl bg-[#0c0c0d] border border-[rgba(255,255,255,0.08)] px-4 text-[#f4f4f4] placeholder-[#4a4a4c] text-[15px] transition-all duration-200 focus:border-[oklch(0.78_0.18_155)] focus:outline-none focus:ring-0"
+          />
+          <input
+            type="password"
+            placeholder="Mot de passe"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="h-14 w-full rounded-xl bg-[#0c0c0d] border border-[rgba(255,255,255,0.08)] px-4 text-[#f4f4f4] placeholder-[#4a4a4c] text-[15px] transition-all duration-200 focus:border-[oklch(0.78_0.18_155)] focus:outline-none focus:ring-0"
+          />
+
+          {error && (
+            <p className="text-sm text-red-400 text-center py-1">{error}</p>
+          )}
+
+          {/* Bouton primaire — vert */}
+          <button
+            type="submit"
+            onClick={handleLogin}
+            disabled={loading}
+            className="mt-1 h-14 w-full rounded-xl bg-[oklch(0.78_0.18_155)] text-black font-semibold text-[15px] tracking-wide btn-press disabled:opacity-40 transition-all duration-200 hover:brightness-110"
+          >
+            {loading ? 'Connexion…' : 'Se connecter'}
+          </button>
+
+          {/* Séparateur */}
+          <div className="flex items-center gap-3 my-1">
+            <div className="flex-1 h-px bg-[rgba(255,255,255,0.08)]" />
+            <span className="text-[#4a4a4c] text-xs font-mono uppercase tracking-widest">ou</span>
+            <div className="flex-1 h-px bg-[rgba(255,255,255,0.08)]" />
+          </div>
+
+          {/* Bouton secondaire — outline */}
+          <button
+            type="button"
+            onClick={handleSignUp}
+            disabled={loading}
+            className="h-14 w-full rounded-xl border border-[rgba(255,255,255,0.2)] text-[#f4f4f4] font-semibold text-[15px] btn-press disabled:opacity-40 transition-all duration-200 hover:border-[rgba(255,255,255,0.35)] hover:bg-[#141414]"
+          >
+            {loading ? '…' : "S'inscrire"}
+          </button>
         </form>
+
       </div>
     </div>
   )
