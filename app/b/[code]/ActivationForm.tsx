@@ -10,14 +10,33 @@ interface ActivationFormProps {
   isLoggedIn: boolean
 }
 
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  height: '56px',
+  borderRadius: '12px',
+  padding: '0 16px',
+  background: '#0c0c0d',
+  border: '1px solid rgba(255,255,255,0.08)',
+  color: '#f4f4f4',
+  fontSize: '15px',
+  outline: 'none',
+  transition: 'border-color 200ms',
+}
+
 export default function ActivationForm({ code, isLoggedIn }: ActivationFormProps) {
   const [mode, setMode] = useState<'login' | 'signup'>(isLoggedIn ? 'activate' as any : 'signup')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [focusedField, setFocusedField] = useState<string | null>(null)
   const router = useRouter()
   const supabase = createClient()
+
+  const getFocusStyle = (field: string): React.CSSProperties =>
+    focusedField === field
+      ? { ...inputStyle, borderColor: 'oklch(0.78 0.18 155)' }
+      : inputStyle
 
   const handleActivate = async () => {
     setLoading(true)
@@ -43,16 +62,14 @@ export default function ActivationForm({ code, isLoggedIn }: ActivationFormProps
         return
       }
     } else {
-      // Inscription
       const { data, error: authError } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: `${window.location.origin}/auth/callback` }
+        options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
       })
 
       if (authError) {
         if (authError.message.includes('already registered')) {
-          // Si déjà inscrit, on tente le login direct
           const { error: loginError } = await supabase.auth.signInWithPassword({ email, password })
           if (loginError) {
             setError("Cet email est déjà utilisé. Connectez-vous.")
@@ -65,14 +82,12 @@ export default function ActivationForm({ code, isLoggedIn }: ActivationFormProps
           return
         }
       }
-      
-      // On tente une connexion forcée au cas où la session n'est pas revenue
+
       if (!data.session) {
         await supabase.auth.signInWithPassword({ email, password })
       }
     }
 
-    // Une fois connecté, on active le badge
     const result = await activateBadge(code)
     if (result.error) {
       setError(result.error)
@@ -85,29 +100,96 @@ export default function ActivationForm({ code, isLoggedIn }: ActivationFormProps
   if (isLoggedIn) {
     return (
       <div className="space-y-4">
-        <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
-          <p className="text-green-700 text-sm font-medium">Vous êtes déjà connecté</p>
+        <div
+          className="rounded-xl p-4 text-center"
+          style={{
+            background: 'oklch(0.78 0.18 155 / 0.1)',
+            border: '1px solid oklch(0.78 0.18 155 / 0.3)',
+          }}
+        >
+          <p className="text-sm font-medium" style={{ color: 'oklch(0.78 0.18 155)' }}>
+            Vous êtes déjà connecté
+          </p>
         </div>
-        <button onClick={handleActivate} disabled={loading} className="w-full h-14 rounded-xl bg-black text-white font-semibold active:scale-[0.98] disabled:opacity-50">
-          {loading ? 'Activation...' : 'Activer ce badge'}
+        <button
+          onClick={handleActivate}
+          disabled={loading}
+          className="w-full h-14 rounded-xl font-semibold text-[15px] active:scale-[0.98] disabled:opacity-40 transition-all duration-200 hover:brightness-110"
+          style={{ background: 'oklch(0.78 0.18 155)', color: '#000' }}
+        >
+          {loading ? 'Activation…' : 'Activer ce badge'}
         </button>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex bg-gray-100 rounded-xl p-1">
-        <button onClick={() => setMode('signup')} className={`flex-1 py-3 text-sm font-medium rounded-lg ${mode === 'signup' ? 'bg-white text-black shadow-sm' : 'text-gray-500'}`}>Créer un compte</button>
-        <button onClick={() => setMode('login')} className={`flex-1 py-3 text-sm font-medium rounded-lg ${mode === 'login' ? 'bg-white text-black shadow-sm' : 'text-gray-500'}`}>Se connecter</button>
+    <div className="space-y-5">
+      {/* Toggle Créer / Connecter */}
+      <div
+        className="flex p-1 rounded-xl"
+        style={{ background: '#141414' }}
+      >
+        <button
+          onClick={() => setMode('signup')}
+          className="flex-1 py-3 text-sm font-medium rounded-lg transition-all duration-200"
+          style={
+            mode === 'signup'
+              ? { background: '#0c0c0d', color: '#f4f4f4', boxShadow: '0 1px 4px rgba(0,0,0,0.4)' }
+              : { color: '#4a4a4c' }
+          }
+        >
+          Créer un compte
+        </button>
+        <button
+          onClick={() => setMode('login')}
+          className="flex-1 py-3 text-sm font-medium rounded-lg transition-all duration-200"
+          style={
+            mode === 'login'
+              ? { background: '#0c0c0d', color: '#f4f4f4', boxShadow: '0 1px 4px rgba(0,0,0,0.4)' }
+              : { color: '#4a4a4c' }
+          }
+        >
+          Se connecter
+        </button>
       </div>
 
-      <form onSubmit={handleAuth} className="space-y-4">
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required className="w-full h-14 rounded-xl border-2 border-gray-200 px-4 focus:border-black focus:outline-none text-black" />
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Mot de passe" required minLength={6} className="w-full h-14 rounded-xl border-2 border-gray-200 px-4 focus:border-black focus:outline-none text-black" />
-        {error && <p className="text-sm text-red-600 text-center">{error}</p>}
-        <button type="submit" disabled={loading} className="w-full h-14 rounded-xl bg-black text-white font-semibold active:scale-[0.98] disabled:opacity-50">
-          {loading ? 'Chargement...' : mode === 'login' ? 'Se connecter et activer' : "S'inscrire et activer"}
+      <form onSubmit={handleAuth} className="space-y-3">
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email"
+          required
+          style={getFocusStyle('email')}
+          onFocus={() => setFocusedField('email')}
+          onBlur={() => setFocusedField(null)}
+        />
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Mot de passe"
+          required
+          minLength={6}
+          style={getFocusStyle('password')}
+          onFocus={() => setFocusedField('password')}
+          onBlur={() => setFocusedField(null)}
+        />
+        {error && (
+          <p className="text-sm text-center" style={{ color: '#f87171' }}>{error}</p>
+        )}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full h-14 rounded-xl font-semibold text-[15px] active:scale-[0.98] disabled:opacity-40 transition-all duration-200 hover:brightness-110"
+          style={{ background: 'oklch(0.78 0.18 155)', color: '#000' }}
+        >
+          {loading
+            ? 'Chargement…'
+            : mode === 'login'
+            ? 'Se connecter et activer'
+            : "S'inscrire et activer"}
         </button>
       </form>
     </div>
