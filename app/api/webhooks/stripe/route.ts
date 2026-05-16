@@ -12,115 +12,149 @@ const supabaseAdmin = createClient(
 )
 
 export async function POST(request: NextRequest) {
-  const body = await request.text()
-  const signature = request.headers.get('stripe-signature')
+  // ── 0. Vérification préalable des variables d'environnement ──────────────
+  if (!process.env.STRIPE_WEBHOOK_SECRET) {
+    console.error('❌ STRIPE_WEBHOOK_SECRET est manquant dans les variables d\'environnement Vercel')
+    return NextResponse.json(
+      { error: 'Webhook secret not configured' },
+      { status: 500 }
+    )
+  }
 
-  console.log('🔔 Webhook Stripe reçu !')
+  if (!process.env.STRIPE_SECRET_KEY) {
+    console.error('❌ STRIPE_SECRET_KEY est manquant')
+    return NextResponse.json({ error: 'Stripe key not configured' }, { status: 500 })
+  }
+
+  // ── 1. Lecture du body brut ───────────────────────────────────────────────
+  let body: string
+  try {
+    body = await request.text()
+  } catch (err) {
+    console.error('❌ Impossible de lire le body de la requête :', err)
+    return NextResponse.json({ error: 'Cannot read request body' }, { status: 400 })
+  }
+
+  const signature = request.headers.get('stripe-signature')
+  console.log('🔔 Webhook Stripe reçu — signature présente :', !!signature)
 
   if (!signature) {
-    console.error('❌ Signature Stripe manquante')
+    console.error('❌ En-tête stripe-signature manquant')
     return NextResponse.json(
       { error: 'Missing stripe-signature header' },
       { status: 400 }
     )
   }
 
+  // ── 2. Vérification de la signature ──────────────────────────────────────
   let event: Stripe.Event
 
   try {
     event = stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
+      process.env.STRIPE_WEBHOOK_SECRET
     )
-    console.log(`✅ Événement vérifié : ${event.type}`)
+    console.log(`✅ Événement Stripe vérifié : ${event.type} (id: ${event.id})`)
   } catch (err) {
-    console.error('❌ Échec de la vérification de la signature :', err)
+    // Cause la plus fréquente : mauvais STRIPE_WEBHOOK_SECRET dans Vercel
+    console.error('❌ Échec vérification signature Stripe :', err)
+    console.error('   → Vérifiez que STRIPE_WEBHOOK_SECRET dans Vercel correspond')
+    console.error('     au "Signing secret" de l\'endpoint dans le Stripe Dashboard (mode LIVE)')
     return NextResponse.json(
       { error: 'Webhook signature verification failed' },
       { status: 400 }
     )
   }
 
-  // Gérer les différents types d'événements
-  switch (event.type) {
-    case 'checkout.session.completed': {
-      const session = event.data.object as Stripe.Checkout.Session
-      console.log('📦 Session de paiement complétée :', session.id)
+  // ── 3. Traitement de l'événement ─────────────────────────────────────────
+  try {
+    switch (event.type) {
+      case 'checkout.session.completed': {
+        const session = event.data.object as Stripe.Checkout.Session
+        console.log('📦 checkout.session.completed :', session.id, '| statut :', session.payment_status)
 
-      // Vérifier que c'est un paiement réussi
-      if (session.payment_status === 'paid') {
-        // 1. Essayer de récupérer l'userId depuis les metadata (plus fiable)
-        let userId = session.metadata?.userId
-        console.log('🔍 Recherche userId dans metadata :', userId)
+        if (session.payment_status === 'paid') {
+          // 1. userId depuis les metadata (méthode principale)
+          let userId = session.metadata?.userId
+          console.log('🔍 userId metadata :', userId)
 
-        // 2. Si pas de metadata, essayer d'extraire de l'URL de succès
-        if (!userId) {
-          const successUrl = session.success_url
-          const userIdMatch = successUrl?.match(/\/p\/([^?]+)/)
-          userId = userIdMatch?.[1]
-          console.log('🔍 Recherche userId dans URL :', userId)
+          // 2. userId extrait de l'URL de succès (fallback)
+          if (!userId) {
+            const userIdMatch = session.success_url?.match(/\/p\/([^?]+)/)
+            userId = userIdMatch?.[1]
+            console.log('🔍 userId URL :', userId)
+          }
+
+          // 3. userId via stripe_account_id (dernier recours)
+          const stripeAccountId = (session as any).stripe_account || event.account
+          console.log('🔍 stripeAccountId :', stripeAccountId)
+
+          if (!userId && stripeAccountId) {
+            const { data: userByStripe, error: lookupError } = await supabaseAdmin
+              .from('users')
+              .select('id')
+              .eq('stripe_account_id', stripeAccountId)
+              .single()
+            if (lookupError) console.warn('⚠️ Lookup Supabase :', lookupError.message)
+            userId = userByStripe?.id
+            console.log('🔍 userId via stripeAccountId :', userId)
+          }
+
+          if (userId && session.amount_total) {
+            console.log(`💰 Insertion pourboire ${session.amount_total / 100}€ pour user ${userId}`)
+            const { error } = await supabaseAdmin
+              .from('tips')
+              .insert({
+                user_id: userId,
+                amount: session.amount_total,
+                stripe_payment_id: session.payment_intent as string,
+                stripe_checkout_session_id: session.id,
+                status: 'completed',
+              })
+
+            if (error) {
+              console.error('❌ Erreur insertion Supabase :', error.message, error.details)
+            } else {
+              console.log('✅ Pourboire enregistré avec succès !')
+            }
+          } else {
+            console.warn('⚠️ userId ou amount_total introuvable — pourboire non enregistré')
+            console.warn('   session.metadata :', JSON.stringify(session.metadata))
+            console.warn('   session.amount_total :', session.amount_total)
+          }
         }
+        break
+      }
 
-        // 3. Si toujours rien, essayer de trouver l'utilisateur par son stripe_account_id
-        const stripeAccountId = (session as any).stripe_account || event.account
-        console.log('🔍 Compte Stripe concerné :', stripeAccountId)
-        
-        if (!userId && stripeAccountId) {
-          const { data: userByStripe } = await supabaseAdmin
-            .from('users')
-            .select('id')
-            .eq('stripe_account_id', stripeAccountId)
-            .single()
-          userId = userByStripe?.id
-          console.log('🔍 UserId trouvé via stripe_account_id :', userId)
-        }
+      case 'account.updated': {
+        const account = event.data.object as Stripe.Account
+        console.log('👤 account.updated :', account.id, '| charges_enabled :', account.charges_enabled, '| payouts_enabled :', account.payouts_enabled)
 
-        if (userId && session.amount_total) {
-          console.log(`💰 Enregistrement du pourboire de ${session.amount_total / 100}€ pour ${userId}`)
-          // Enregistrer le pourboire dans la base de données
+        if (account.charges_enabled && account.payouts_enabled) {
           const { error } = await supabaseAdmin
-            .from('tips')
-            .insert({
-              user_id: userId,
-              amount: session.amount_total,
-              stripe_payment_id: session.payment_intent as string,
-              stripe_checkout_session_id: session.id,
-              status: 'completed',
-            })
+            .from('users')
+            .update({ stripe_onboarding_complete: true })
+            .eq('stripe_account_id', account.id)
 
           if (error) {
-            console.error('❌ Erreur insertion Supabase :', error)
+            console.error('❌ Erreur maj onboarding Supabase :', error.message)
           } else {
-            console.log(`✅ Pourboire enregistré avec succès !`)
+            console.log('✅ Onboarding Stripe marqué complet pour :', account.id)
           }
-        } else {
-          console.warn('⚠️ Impossible de déterminer l\'utilisateur ou le montant')
         }
+        break
       }
-      break
+
+      default:
+        console.log(`ℹ️ Événement non géré : ${event.type}`)
     }
-
-    case 'account.updated': {
-      const account = event.data.object as Stripe.Account
-      if (account.charges_enabled && account.payouts_enabled) {
-        const { error } = await supabaseAdmin
-          .from('users')
-          .update({ stripe_onboarding_complete: true })
-          .eq('stripe_account_id', account.id)
-
-        if (error) {
-          console.error('❌ Erreur mise à jour onboarding :', error)
-        } else {
-          console.log(`✅ Onboarding complété pour ${account.id}`)
-        }
-      }
-      break
-    }
-
-    default:
-      console.log(`ℹ️ Événement non géré : ${event.type}`)
+  } catch (err) {
+    // On log l'erreur mais on retourne quand même 200 pour que Stripe
+    // ne réessaie pas (l'événement a bien été reçu, c'est le traitement qui a échoué)
+    console.error('❌ Erreur inattendue durant le traitement :', err)
   }
 
+  // ── 4. Toujours retourner 200 pour accuser réception à Stripe ────────────
   return NextResponse.json({ received: true })
 }
