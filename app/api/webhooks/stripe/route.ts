@@ -2,28 +2,21 @@ import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 
-// Client Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
-// Client Supabase avec service role (bypass RLS)
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
 export async function POST(request: NextRequest) {
-  // ── 0. Vérification préalable des variables d'environnement ──────────────
-  if (!process.env.STRIPE_WEBHOOK_SECRET) {
-    console.error('❌ STRIPE_WEBHOOK_SECRET est manquant dans les variables d\'environnement Vercel')
-    return NextResponse.json(
-      { error: 'Webhook secret not configured' },
-      { status: 500 }
-    )
-  }
+  // ── 0. Vérification des variables d'environnement ────────────────────────
+  const secretConnect = process.env.STRIPE_WEBHOOK_SECRET          // "TapTip connect" (Comptes connectés)
+  const secretPlatform = process.env.STRIPE_WEBHOOK_SECRET_PLATFORM // "brilliant-victory" (Votre compte)
 
-  if (!process.env.STRIPE_SECRET_KEY) {
-    console.error('❌ STRIPE_SECRET_KEY est manquant')
-    return NextResponse.json({ error: 'Stripe key not configured' }, { status: 500 })
+  if (!secretConnect && !secretPlatform) {
+    console.error('❌ Aucun STRIPE_WEBHOOK_SECRET configuré dans Vercel')
+    return NextResponse.json({ error: 'Webhook secret not configured' }, { status: 500 })
   }
 
   // ── 1. Lecture du body brut ───────────────────────────────────────────────
@@ -31,62 +24,67 @@ export async function POST(request: NextRequest) {
   try {
     body = await request.text()
   } catch (err) {
-    console.error('❌ Impossible de lire le body de la requête :', err)
+    console.error('❌ Impossible de lire le body :', err)
     return NextResponse.json({ error: 'Cannot read request body' }, { status: 400 })
   }
 
   const signature = request.headers.get('stripe-signature')
-  console.log('🔔 Webhook Stripe reçu — signature présente :', !!signature)
 
   if (!signature) {
     console.error('❌ En-tête stripe-signature manquant')
-    return NextResponse.json(
-      { error: 'Missing stripe-signature header' },
-      { status: 400 }
-    )
+    return NextResponse.json({ error: 'Missing stripe-signature header' }, { status: 400 })
   }
 
-  // ── 2. Vérification de la signature ──────────────────────────────────────
-  let event: Stripe.Event
+  // ── 2. Vérification de la signature — on essaie les 2 secrets ────────────
+  // Deux endpoints Stripe pointent vers cette même URL avec des secrets différents :
+  //   - STRIPE_WEBHOOK_SECRET         → "TapTip connect" (Comptes connectés) → checkout.session.completed
+  //   - STRIPE_WEBHOOK_SECRET_PLATFORM → "brilliant-victory" (Votre compte)   → account.updated
+  let event: Stripe.Event | null = null
+  let usedSecret = ''
 
-  try {
-    event = stripe.webhooks.constructEvent(
-      body,
-      signature,
-      process.env.STRIPE_WEBHOOK_SECRET
-    )
-    console.log(`✅ Événement Stripe vérifié : ${event.type} (id: ${event.id})`)
-  } catch (err) {
-    // Cause la plus fréquente : mauvais STRIPE_WEBHOOK_SECRET dans Vercel
-    console.error('❌ Échec vérification signature Stripe :', err)
-    console.error('   → Vérifiez que STRIPE_WEBHOOK_SECRET dans Vercel correspond')
-    console.error('     au "Signing secret" de l\'endpoint dans le Stripe Dashboard (mode LIVE)')
-    return NextResponse.json(
-      { error: 'Webhook signature verification failed' },
-      { status: 400 }
-    )
+  const secretsToTry = [
+    { key: 'STRIPE_WEBHOOK_SECRET', value: secretConnect },
+    { key: 'STRIPE_WEBHOOK_SECRET_PLATFORM', value: secretPlatform },
+  ].filter(s => !!s.value)
+
+  for (const { key, value } of secretsToTry) {
+    try {
+      event = stripe.webhooks.constructEvent(body, signature, value!)
+      usedSecret = key
+      break
+    } catch {
+      // Ce secret ne correspond pas à cet événement, on essaie le suivant
+    }
   }
+
+  if (!event) {
+    console.error('❌ Échec de vérification avec tous les secrets disponibles')
+    console.error('   Secrets essayés :', secretsToTry.map(s => s.key).join(', '))
+    console.error('   → Vérifiez que STRIPE_WEBHOOK_SECRET et STRIPE_WEBHOOK_SECRET_PLATFORM')
+    console.error('     correspondent aux signing secrets dans le Stripe Dashboard (mode LIVE)')
+    return NextResponse.json({ error: 'Webhook signature verification failed' }, { status: 400 })
+  }
+
+  console.log(`✅ Événement Stripe vérifié : ${event.type} (id: ${event.id}) via ${usedSecret}`)
 
   // ── 3. Traitement de l'événement ─────────────────────────────────────────
   try {
     switch (event.type) {
+
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
         console.log('📦 checkout.session.completed :', session.id, '| statut :', session.payment_status)
 
         if (session.payment_status === 'paid') {
-          // 1. userId depuis les metadata (méthode principale)
           let userId = session.metadata?.userId
           console.log('🔍 userId metadata :', userId)
 
-          // 2. userId extrait de l'URL de succès (fallback)
           if (!userId) {
             const userIdMatch = session.success_url?.match(/\/p\/([^?]+)/)
             userId = userIdMatch?.[1]
             console.log('🔍 userId URL :', userId)
           }
 
-          // 3. userId via stripe_account_id (dernier recours)
           const stripeAccountId = (session as any).stripe_account || event.account
           console.log('🔍 stripeAccountId :', stripeAccountId)
 
@@ -112,7 +110,6 @@ export async function POST(request: NextRequest) {
                 stripe_checkout_session_id: session.id,
                 status: 'completed',
               })
-
             if (error) {
               console.error('❌ Erreur insertion Supabase :', error.message, error.details)
             } else {
@@ -120,8 +117,8 @@ export async function POST(request: NextRequest) {
             }
           } else {
             console.warn('⚠️ userId ou amount_total introuvable — pourboire non enregistré')
-            console.warn('   session.metadata :', JSON.stringify(session.metadata))
-            console.warn('   session.amount_total :', session.amount_total)
+            console.warn('   metadata :', JSON.stringify(session.metadata))
+            console.warn('   amount_total :', session.amount_total)
           }
         }
         break
@@ -129,7 +126,9 @@ export async function POST(request: NextRequest) {
 
       case 'account.updated': {
         const account = event.data.object as Stripe.Account
-        console.log('👤 account.updated :', account.id, '| charges_enabled :', account.charges_enabled, '| payouts_enabled :', account.payouts_enabled)
+        console.log('👤 account.updated :', account.id,
+          '| charges_enabled :', account.charges_enabled,
+          '| payouts_enabled :', account.payouts_enabled)
 
         if (account.charges_enabled && account.payouts_enabled) {
           const { error } = await supabaseAdmin
@@ -150,11 +149,12 @@ export async function POST(request: NextRequest) {
         console.log(`ℹ️ Événement non géré : ${event.type}`)
     }
   } catch (err) {
-    // On log l'erreur mais on retourne quand même 200 pour que Stripe
-    // ne réessaie pas (l'événement a bien été reçu, c'est le traitement qui a échoué)
+    // On log l'erreur mais on retourne 200 quand même :
+    // Stripe a bien livré l'événement, c'est notre traitement qui a planté.
+    // On ne veut pas que Stripe réessaie à l'infini.
     console.error('❌ Erreur inattendue durant le traitement :', err)
   }
 
-  // ── 4. Toujours retourner 200 pour accuser réception à Stripe ────────────
+  // ── 4. Toujours 200 pour accuser réception à Stripe ──────────────────────
   return NextResponse.json({ received: true })
 }
