@@ -19,22 +19,15 @@ export default function DashboardThemeProvider({ children }: { children: React.R
     if (stored === 'light' || stored === 'dark') setTheme(stored)
   }, [])
 
-  // Sync theme-color + apple status bar so Safari chrome/status bar match the theme
+  // Sync theme-color meta tag so Safari status bar + browser chrome match the theme
   useEffect(() => {
-    const color = theme === 'light' ? '#f5f5f7' : '#050505'
-
-    // Remove any existing theme-color meta tags (including Next.js server-rendered one)
-    // and replace with a fresh one so iOS Safari picks it up reliably
-    document.querySelectorAll('meta[name="theme-color"]').forEach(el => el.remove())
-    const meta = document.createElement('meta')
-    meta.setAttribute('name', 'theme-color')
-    meta.setAttribute('content', color)
-    document.head.appendChild(meta)
-
-    // Update apple-mobile-web-app-status-bar-style for PWA / home screen mode
-    const appleBar = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')
-    if (appleBar) {
-      appleBar.setAttribute('content', theme === 'light' ? 'default' : 'black-translucent')
+    const meta = document.querySelector('meta[name="theme-color"]')
+    if (meta) {
+      meta.setAttribute('content', theme === 'light' ? '#f5f5f7' : '#050505')
+    }
+    return () => {
+      // Restore default on unmount (when leaving dashboard)
+      if (meta) meta.setAttribute('content', '#050505')
     }
   }, [theme])
 
