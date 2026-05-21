@@ -24,12 +24,12 @@ const inputStyle = {
   height: '48px',
   padding: '0 16px',
   borderRadius: '12px',
-  background: '#0c0c0d',
-  border: '1px solid rgba(255,255,255,0.08)',
-  color: '#f4f4f4',
+  background: 'var(--dash-surface)',
+  border: '1px solid var(--dash-border)',
+  color: 'var(--dash-text)',
   fontSize: '15px',
   outline: 'none',
-  transition: 'border-color 200ms',
+  transition: 'border-color 200ms, background 300ms',
 }
 
 export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
@@ -152,11 +152,11 @@ export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
         {/* Séparateur réseaux sociaux */}
         <div
           className="pt-2 pb-1"
-          style={{ borderTop: '1px solid rgba(255,255,255,0.06)', marginTop: '8px' }}
+          style={{ borderTop: '1px solid var(--dash-border-subtle)', marginTop: '8px' }}
         >
           <p
             className="text-[10px] uppercase tracking-widest mb-3"
-            style={{ fontFamily: 'var(--font-jetbrains), monospace', color: '#4a4a4c' }}
+            style={{ fontFamily: 'var(--font-jetbrains), monospace', color: 'var(--dash-text-3)' }}
           >
             Liens optionnels
           </p>
@@ -165,7 +165,7 @@ export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
           <div className="relative mb-3">
             <span
               className="absolute left-4 top-1/2 -translate-y-1/2 text-[13px] pointer-events-none select-none"
-              style={{ color: '#4a4a4c' }}
+              style={{ color: 'var(--dash-text-3)' }}
             >
               instagram.com/
             </span>
@@ -190,7 +190,7 @@ export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
           <div className="relative mb-3">
             <span
               className="absolute left-4 top-1/2 -translate-y-1/2 text-[13px] pointer-events-none select-none"
-              style={{ color: '#4a4a4c' }}
+              style={{ color: 'var(--dash-text-3)' }}
             >
               tiktok.com/@
             </span>
@@ -237,17 +237,17 @@ export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
 
       <div
         className="mt-6 pt-5 text-center"
-        style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}
+        style={{ borderTop: '1px solid var(--dash-border)' }}
       >
         <p
           className="text-[10px] uppercase mb-2 tracking-widest"
-          style={{ fontFamily: 'var(--font-jetbrains), monospace', color: '#4a4a4c' }}
+          style={{ fontFamily: 'var(--font-jetbrains), monospace', color: 'var(--dash-text-3)' }}
         >
           Votre lien
         </p>
         <code
           className="text-[10px] break-all"
-          style={{ color: '#8b8b8d', fontFamily: 'var(--font-jetbrains), monospace' }}
+          style={{ color: 'var(--dash-text-2)', fontFamily: 'var(--font-jetbrains), monospace' }}
         >
           app.taptip.fr/p/{userId}
         </code>

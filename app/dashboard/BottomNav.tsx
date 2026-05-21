@@ -25,7 +25,7 @@ const SettingsIcon = ({ active }: { active: boolean }) => (
 )
 
 const ACCENT = 'oklch(0.78 0.18 155)'
-const INACTIVE = '#4a4a4c'
+const INACTIVE = 'var(--dash-text-3)'
 
 export default function BottomNav() {
   const pathname = usePathname()
@@ -41,8 +41,8 @@ export default function BottomNav() {
       <nav
         className="w-full max-w-[390px] backdrop-blur-xl"
         style={{
-          background: 'rgba(5,5,5,0.95)',
-          borderTop: '1px solid rgba(255,255,255,0.08)',
+          background: 'var(--dash-nav)',
+          borderTop: '1px solid var(--dash-border)',
         }}
       >
         <div className="flex justify-around items-center h-16 pb-2">

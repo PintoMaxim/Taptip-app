@@ -7,6 +7,7 @@ import ShareButton from './ShareButton'
 import ActivityList from './ActivityList'
 import BottomNav from './BottomNav'
 import PullToRefresh from './PullToRefresh'
+import ThemeToggleButton from './ThemeToggleButton'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -35,50 +36,53 @@ export default async function DashboardPage() {
         stars.push(<span key={i} style={{ color: '#f59e0b' }}>★</span>)
       } else if (i === floorRating + 1 && hasHalfStar) {
         stars.push(
-          <span key={i} className="relative" style={{ color: '#4a4a4c' }}>
+          <span key={i} className="relative" style={{ color: 'var(--dash-text-3)' }}>
             ★
             <span className="absolute left-0 top-0 overflow-hidden w-[50%]" style={{ color: '#f59e0b' }}>★</span>
           </span>
         )
       } else {
-        stars.push(<span key={i} style={{ color: '#4a4a4c' }}>★</span>)
+        stars.push(<span key={i} style={{ color: 'var(--dash-text-3)' }}>★</span>)
       }
     }
     return stars
   }
 
   return (
-    <div className="min-h-[100dvh] flex justify-center" style={{ background: '#050505' }}>
-      <div className="w-full max-w-[390px] min-h-[100dvh] flex flex-col relative" style={{ background: '#050505' }}>
+    <div className="min-h-[100dvh] flex justify-center" style={{ background: 'var(--dash-bg)' }}>
+      <div className="w-full max-w-[390px] min-h-[100dvh] flex flex-col relative" style={{ background: 'var(--dash-bg)' }}>
         <PullToRefresh>
           {/* Header */}
           <header
             className="px-5 py-4 flex items-center justify-between sticky top-0 z-10"
             style={{
-              background: 'rgba(5,5,5,0.9)',
+              background: 'var(--dash-header)',
               backdropFilter: 'blur(12px)',
-              borderBottom: '1px solid rgba(255,255,255,0.06)',
+              borderBottom: '1px solid var(--dash-border-subtle)',
             }}
           >
             <div className="flex items-center gap-3">
               <Image src="/logo.png" alt="Logo" width={32} height={32} priority />
-              <span className="text-base font-semibold" style={{ color: '#f4f4f4' }}>
+              <span className="text-base font-semibold" style={{ color: 'var(--dash-text)' }}>
                 Bonjour, {firstName}
               </span>
             </div>
-            <Link
+            <div className="flex items-center gap-2">
+              <ThemeToggleButton />
+              <Link
               href="/dashboard/profile"
               className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0"
-              style={{ background: '#141414', border: '1px solid rgba(255,255,255,0.1)' }}
+              style={{ background: 'var(--dash-surface-2)', border: '1px solid var(--dash-border-em)' }}
             >
               {profile?.avatar_url ? (
                 <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <span className="text-sm font-bold" style={{ color: '#8b8b8d' }}>{firstName[0]}</span>
+                  <span className="text-sm font-bold" style={{ color: 'var(--dash-text-2)' }}>{firstName[0]}</span>
                 </div>
               )}
             </Link>
+            </div>
           </header>
 
           <main className="px-5 py-5 space-y-4">
@@ -86,8 +90,8 @@ export default async function DashboardPage() {
             <div
               className="rounded-2xl p-5 relative overflow-hidden"
               style={{
-                background: '#0c0c0d',
-                border: '1px solid rgba(255,255,255,0.1)',
+                background: 'var(--dash-surface)',
+                border: '1px solid var(--dash-border-em)',
                 boxShadow: '0 0 40px oklch(0.78 0.18 155 / 0.06)',
               }}
             >
@@ -98,13 +102,13 @@ export default async function DashboardPage() {
               <div className="relative z-10">
                 <p
                   className="text-xs mb-1"
-                  style={{ color: '#8b8b8d', fontFamily: 'var(--font-jetbrains), monospace', textTransform: 'uppercase', letterSpacing: '0.08em' }}
+                  style={{ color: 'var(--dash-text-2)', fontFamily: 'var(--font-jetbrains), monospace', textTransform: 'uppercase', letterSpacing: '0.08em' }}
                 >
                   Total reçu
                 </p>
                 <p
                   className="text-3xl font-bold mb-5"
-                  style={{ color: '#f4f4f4', fontFamily: 'var(--font-jetbrains), monospace' }}
+                  style={{ color: 'var(--dash-text)', fontFamily: 'var(--font-jetbrains), monospace' }}
                 >
                   {stats.totalReceived.toFixed(2)}€
                 </p>
@@ -112,12 +116,12 @@ export default async function DashboardPage() {
                   <div>
                     <p
                       className="text-[10px] uppercase tracking-wider mb-1"
-                      style={{ color: '#4a4a4c', fontFamily: 'var(--font-jetbrains), monospace' }}
+                      style={{ color: 'var(--dash-text-3)', fontFamily: 'var(--font-jetbrains), monospace' }}
                     >
                       Note moyenne
                     </p>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-lg font-bold" style={{ color: '#f4f4f4' }}>
+                      <span className="text-lg font-bold" style={{ color: 'var(--dash-text)' }}>
                         {stats.averageRating || '-'}
                       </span>
                       <div className="flex text-xs">{renderStars(stats.averageRating)}</div>
@@ -126,11 +130,11 @@ export default async function DashboardPage() {
                   <div>
                     <p
                       className="text-[10px] uppercase tracking-wider mb-1"
-                      style={{ color: '#4a4a4c', fontFamily: 'var(--font-jetbrains), monospace' }}
+                      style={{ color: 'var(--dash-text-3)', fontFamily: 'var(--font-jetbrains), monospace' }}
                     >
                       Avis reçus
                     </p>
-                    <span className="text-lg font-bold" style={{ color: '#f4f4f4' }}>
+                    <span className="text-lg font-bold" style={{ color: 'var(--dash-text)' }}>
                       {stats.reviewCount}
                     </span>
                   </div>
@@ -147,15 +151,15 @@ export default async function DashboardPage() {
                 rel="noopener noreferrer"
                 className="flex-1 h-16 flex flex-col items-center justify-center gap-1.5 rounded-xl active:scale-[0.98] transition-all duration-200"
                 style={{
-                  background: '#0c0c0d',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  color: '#8b8b8d',
+                  background: 'var(--dash-surface)',
+                  border: '1px solid var(--dash-border)',
+                  color: 'var(--dash-text-2)',
                 }}
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="1" y="4" width="22" height="16" rx="2" ry="2" /><line x1="1" y1="10" x2="23" y2="10" />
                 </svg>
-                <span className="text-xs font-medium" style={{ color: '#f4f4f4' }}>Virements</span>
+                <span className="text-xs font-medium" style={{ color: 'var(--dash-text)' }}>Virements</span>
               </a>
             </div>
 
@@ -163,7 +167,7 @@ export default async function DashboardPage() {
             {!stripeStatus.isComplete && (
               <div
                 className="rounded-xl p-4"
-                style={{ background: '#0c0c0d', border: '1px solid rgba(255,255,255,0.08)' }}
+                style={{ background: 'var(--dash-surface)', border: '1px solid var(--dash-border)' }}
               >
                 <div className="flex items-center gap-3">
                   <div
@@ -175,8 +179,8 @@ export default async function DashboardPage() {
                     </svg>
                   </div>
                   <div className="flex-1">
-                    <p className="text-xs font-medium" style={{ color: '#f4f4f4' }}>Configurez vos paiements</p>
-                    <p className="text-[10px]" style={{ color: '#8b8b8d' }}>Pour recevoir des pourboires</p>
+                    <p className="text-xs font-medium" style={{ color: 'var(--dash-text)' }}>Configurez vos paiements</p>
+                    <p className="text-[10px]" style={{ color: 'var(--dash-text-2)' }}>Pour recevoir des pourboires</p>
                   </div>
                   <Link
                     href="/dashboard/settings"

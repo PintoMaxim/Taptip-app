@@ -5,6 +5,7 @@ import { getProfile } from '@/app/actions/profile'
 import StripeConnectButton from '../StripeConnectButton'
 import LogoutButton from '../LogoutButton'
 import BottomNav from '../BottomNav'
+import ThemeToggleButton from '../ThemeToggleButton'
 import CopyProfileLink from './CopyProfileLink'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -14,14 +15,14 @@ const sectionLabel: React.CSSProperties = {
   fontFamily: 'var(--font-jetbrains), monospace',
   textTransform: 'uppercase',
   letterSpacing: '0.1em',
-  color: '#4a4a4c',
+  color: 'var(--dash-text-3)',
   marginBottom: '8px',
   marginLeft: '4px',
 }
 
 const card: React.CSSProperties = {
-  background: '#0c0c0d',
-  border: '1px solid rgba(255,255,255,0.08)',
+  background: 'var(--dash-surface)',
+  border: '1px solid var(--dash-border)',
   borderRadius: '12px',
 }
 
@@ -47,20 +48,21 @@ export default async function SettingsPage() {
     .single()
 
   return (
-    <div className="min-h-[100dvh] flex justify-center" style={{ background: '#050505' }}>
-      <div className="w-full max-w-[390px] min-h-[100dvh]" style={{ background: '#050505' }}>
+    <div className="min-h-[100dvh] flex justify-center" style={{ background: 'var(--dash-bg)' }}>
+      <div className="w-full max-w-[390px] min-h-[100dvh]" style={{ background: 'var(--dash-bg)' }}>
 
         {/* Header */}
         <header
           className="px-5 py-4 flex items-center gap-3 sticky top-0 z-10"
           style={{
-            background: 'rgba(5,5,5,0.9)',
+            background: 'var(--dash-header)',
             backdropFilter: 'blur(12px)',
-            borderBottom: '1px solid rgba(255,255,255,0.06)',
+            borderBottom: '1px solid var(--dash-border-subtle)',
           }}
         >
           <Image src="/logo.png" alt="Logo" width={28} height={28} />
-          <h1 className="text-base font-semibold" style={{ color: '#f4f4f4' }}>Paramètres</h1>
+          <h1 className="text-base font-semibold flex-1" style={{ color: 'var(--dash-text)' }}>Paramètres</h1>
+          <ThemeToggleButton />
         </header>
 
         <main className="px-5 py-5 space-y-6">
@@ -72,13 +74,13 @@ export default async function SettingsPage() {
               <div className="flex items-center gap-3 mb-3">
                 <div
                   className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-                  style={{ background: '#141414', border: '1px solid rgba(255,255,255,0.08)' }}
+                  style={{ background: 'var(--dash-surface-2)', border: '1px solid var(--dash-border)' }}
                 >
                   <span className="text-base">💳</span>
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium" style={{ color: '#f4f4f4' }}>Stripe Connect</p>
-                  <p className="text-[10px]" style={{ color: stripeStatus.isComplete ? 'oklch(0.78 0.18 155)' : '#8b8b8d' }}>
+                  <p className="text-sm font-medium" style={{ color: 'var(--dash-text)' }}>Stripe Connect</p>
+                  <p className="text-[10px]" style={{ color: stripeStatus.isComplete ? 'oklch(0.78 0.18 155)' : 'var(--dash-text-2)' }}>
                     {stripeStatus.isComplete ? '● Compte connecté' : 'Non configuré'}
                   </p>
                 </div>
@@ -88,7 +90,7 @@ export default async function SettingsPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200"
-                    style={{ background: '#141414', border: '1px solid rgba(255,255,255,0.12)', color: '#f4f4f4' }}
+                    style={{ background: 'var(--dash-surface-2)', border: '1px solid var(--dash-border-em)', color: 'var(--dash-text)' }}
                   >
                     Gérer
                   </a>
@@ -145,14 +147,14 @@ export default async function SettingsPage() {
                           {n}
                         </span>
                         <div>
-                          <p className="text-[11px] font-bold mb-0.5" style={{ color: '#f4f4f4' }}>{title}</p>
-                          <p className="text-[10px] leading-relaxed" style={{ color: '#8b8b8d' }}>{text}</p>
+                          <p className="text-[11px] font-bold mb-0.5" style={{ color: 'var(--dash-text)' }}>{title}</p>
+                          <p className="text-[10px] leading-relaxed" style={{ color: 'var(--dash-text-2)' }}>{text}</p>
                         </div>
                       </div>
                     ))}
                   </div>
                   <div className="mt-4 pt-3" style={{ borderTop: '1px solid oklch(0.78 0.18 155 / 0.15)' }}>
-                    <p className="text-[9px] text-center italic" style={{ color: '#4a4a4c' }}>
+                    <p className="text-[9px] text-center italic" style={{ color: 'var(--dash-text-3)' }}>
                       Compte actif immédiatement après ces étapes.
                     </p>
                   </div>
@@ -171,10 +173,10 @@ export default async function SettingsPage() {
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium" style={{ color: '#f4f4f4' }}>Modifier mon profil</p>
-                  <p className="text-[10px]" style={{ color: '#8b8b8d' }}>Photo, nom, métier…</p>
+                  <p className="text-sm font-medium" style={{ color: 'var(--dash-text)' }}>Modifier mon profil</p>
+                  <p className="text-[10px]" style={{ color: 'var(--dash-text-2)' }}>Photo, nom, métier…</p>
                 </div>
-                <span style={{ color: '#4a4a4c' }}>→</span>
+                <span style={{ color: 'var(--dash-text-3)' }}>→</span>
               </div>
             </Link>
           </section>
@@ -183,11 +185,11 @@ export default async function SettingsPage() {
           <section>
             <p style={sectionLabel}>Compte</p>
             <div style={{ ...card, overflow: 'hidden' }}>
-              <div className="p-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                <p className="text-sm font-medium" style={{ color: '#f4f4f4' }}>Email</p>
+              <div className="p-4" style={{ borderBottom: '1px solid var(--dash-border-subtle)' }}>
+                <p className="text-sm font-medium" style={{ color: 'var(--dash-text)' }}>Email</p>
                 <p
                   className="text-[10px] mt-0.5"
-                  style={{ color: '#8b8b8d', fontFamily: 'var(--font-jetbrains), monospace' }}
+                  style={{ color: 'var(--dash-text-2)', fontFamily: 'var(--font-jetbrains), monospace' }}
                 >
                   {user.email}
                 </p>
@@ -214,8 +216,8 @@ export default async function SettingsPage() {
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium" style={{ color: '#f4f4f4' }}>🏷️ Gestion des badges</p>
-                    <p className="text-[10px]" style={{ color: '#8b8b8d' }}>Générer et suivre les badges NFC</p>
+                    <p className="text-sm font-medium" style={{ color: 'var(--dash-text)' }}>🏷️ Gestion des badges</p>
+                    <p className="text-[10px]" style={{ color: 'var(--dash-text-2)' }}>Générer et suivre les badges NFC</p>
                   </div>
                   <span style={{ color: 'oklch(0.78 0.18 155)' }}>→</span>
                 </div>
@@ -225,7 +227,7 @@ export default async function SettingsPage() {
 
           <p
             className="text-center text-[10px] pt-2"
-            style={{ color: '#4a4a4c', fontFamily: 'var(--font-jetbrains), monospace' }}
+            style={{ color: 'var(--dash-text-3)', fontFamily: 'var(--font-jetbrains), monospace' }}
           >
             TapTip v1.0
           </p>

@@ -124,6 +124,36 @@ img {
   background: rgba(255, 255, 255, 0.2);
 }
 
+/* ===== DASHBOARD THEME VARIABLES ===== */
+
+[data-dash-theme="dark"] {
+  --dash-bg:            #050505;
+  --dash-surface:       #0c0c0d;
+  --dash-surface-2:     #141414;
+  --dash-text:          #f4f4f4;
+  --dash-text-2:        #8b8b8d;
+  --dash-text-3:        #4a4a4c;
+  --dash-border:        rgba(255, 255, 255, 0.08);
+  --dash-border-subtle: rgba(255, 255, 255, 0.06);
+  --dash-border-em:     rgba(255, 255, 255, 0.12);
+  --dash-header:        rgba(5, 5, 5, 0.9);
+  --dash-nav:           rgba(5, 5, 5, 0.95);
+}
+
+[data-dash-theme="light"] {
+  --dash-bg:            #f5f5f7;
+  --dash-surface:       #ffffff;
+  --dash-surface-2:     #efefef;
+  --dash-text:          #171717;
+  --dash-text-2:        #666666;
+  --dash-text-3:        #a0a0a0;
+  --dash-border:        rgba(0, 0, 0, 0.08);
+  --dash-border-subtle: rgba(0, 0, 0, 0.06);
+  --dash-border-em:     rgba(0, 0, 0, 0.12);
+  --dash-header:        rgba(245, 245, 247, 0.9);
+  --dash-nav:           rgba(255, 255, 255, 0.97);
+}
+
 /* ===== ANIMATIONS PREMIUM ===== */
 
 /* Confetti animation */
