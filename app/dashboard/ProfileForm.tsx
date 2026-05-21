@@ -12,6 +12,9 @@ interface ProfileFormProps {
     bio?: string
     avatar_url?: string
     email?: string
+    instagram_url?: string
+    tiktok_url?: string
+    booking_url?: string
   } | null
   userId: string
 }
@@ -35,6 +38,9 @@ export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
     last_name: initialData?.last_name || '',
     job_title: initialData?.job_title || '',
     bio: initialData?.bio || '',
+    instagram_url: initialData?.instagram_url || '',
+    tiktok_url: initialData?.tiktok_url || '',
+    booking_url: initialData?.booking_url || '',
   })
   const [avatarUrl, setAvatarUrl] = useState(initialData?.avatar_url || '')
   const [saving, setSaving] = useState(false)
@@ -142,6 +148,83 @@ export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
           onFocus={() => setFocusedField('bio')}
           onBlur={() => setFocusedField(null)}
         />
+
+        {/* Séparateur réseaux sociaux */}
+        <div
+          className="pt-2 pb-1"
+          style={{ borderTop: '1px solid rgba(255,255,255,0.06)', marginTop: '8px' }}
+        >
+          <p
+            className="text-[10px] uppercase tracking-widest mb-3"
+            style={{ fontFamily: 'var(--font-jetbrains), monospace', color: '#4a4a4c' }}
+          >
+            Liens optionnels
+          </p>
+
+          {/* Instagram */}
+          <div className="relative mb-3">
+            <span
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-[13px] pointer-events-none select-none"
+              style={{ color: '#4a4a4c' }}
+            >
+              instagram.com/
+            </span>
+            <input
+              type="text"
+              name="instagram_url"
+              value={formData.instagram_url}
+              onChange={handleChange}
+              placeholder="votre_pseudo"
+              style={{
+                ...getFocusStyle('instagram_url'),
+                paddingLeft: '116px',
+              }}
+              onFocus={() => setFocusedField('instagram_url')}
+              onBlur={() => setFocusedField(null)}
+              autoComplete="off"
+              autoCapitalize="none"
+            />
+          </div>
+
+          {/* TikTok */}
+          <div className="relative mb-3">
+            <span
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-[13px] pointer-events-none select-none"
+              style={{ color: '#4a4a4c' }}
+            >
+              tiktok.com/@
+            </span>
+            <input
+              type="text"
+              name="tiktok_url"
+              value={formData.tiktok_url}
+              onChange={handleChange}
+              placeholder="votre_pseudo"
+              style={{
+                ...getFocusStyle('tiktok_url'),
+                paddingLeft: '108px',
+              }}
+              onFocus={() => setFocusedField('tiktok_url')}
+              onBlur={() => setFocusedField(null)}
+              autoComplete="off"
+              autoCapitalize="none"
+            />
+          </div>
+
+          {/* Lien de réservation */}
+          <input
+            type="url"
+            name="booking_url"
+            value={formData.booking_url}
+            onChange={handleChange}
+            placeholder="Lien de réservation (Planity, Calendly…)"
+            style={getFocusStyle('booking_url')}
+            onFocus={() => setFocusedField('booking_url')}
+            onBlur={() => setFocusedField(null)}
+            autoComplete="off"
+          />
+        </div>
+
         <button
           type="submit"
           disabled={saving}
