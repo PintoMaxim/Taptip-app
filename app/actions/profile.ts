@@ -8,6 +8,9 @@ export interface ProfileData {
   last_name: string
   job_title: string
   bio: string
+  instagram_url: string
+  tiktok_url: string
+  booking_url: string
 }
 
 export async function getProfile() {
@@ -36,6 +39,9 @@ export async function updateProfile(data: ProfileData) {
     last_name: data.last_name,
     job_title: data.job_title,
     bio: data.bio,
+    instagram_url: data.instagram_url || null,
+    tiktok_url: data.tiktok_url || null,
+    booking_url: data.booking_url || null,
     updated_at: new Date().toISOString(),
   })
 
