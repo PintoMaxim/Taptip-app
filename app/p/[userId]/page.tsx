@@ -4,6 +4,7 @@ import { getReviewStats, getLatestReviews } from '@/app/actions/reviews'
 import TipButtons from './TipButtons'
 import ReviewSection from './ReviewSection'
 import SuccessAnimation from './SuccessAnimation'
+import SocialLinks from './SocialLinks'
 
 interface PageProps {
   params: Promise<{ userId: string }>
@@ -93,6 +94,12 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
           </div>
           <TipButtons userId={userId} stripeAccountId={userData.stripe_account_id} />
         </div>
+
+        <SocialLinks
+          instagramHandle={userData.instagram_url}
+          tiktokHandle={userData.tiktok_url}
+          bookingUrl={userData.booking_url}
+        />
 
         <ReviewSection userId={userId} latestReviews={latestReviews} />
       </main>
