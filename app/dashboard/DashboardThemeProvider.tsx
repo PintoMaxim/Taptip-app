@@ -19,6 +19,18 @@ export default function DashboardThemeProvider({ children }: { children: React.R
     if (stored === 'light' || stored === 'dark') setTheme(stored)
   }, [])
 
+  // Sync theme-color meta tag so Safari status bar + browser chrome match the theme
+  useEffect(() => {
+    const meta = document.querySelector('meta[name="theme-color"]')
+    if (meta) {
+      meta.setAttribute('content', theme === 'light' ? '#f5f5f7' : '#050505')
+    }
+    return () => {
+      // Restore default on unmount (when leaving dashboard)
+      if (meta) meta.setAttribute('content', '#050505')
+    }
+  }, [theme])
+
   const toggle = () => {
     setTheme(prev => {
       const next = prev === 'dark' ? 'light' : 'dark'
