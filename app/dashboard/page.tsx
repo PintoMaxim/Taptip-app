@@ -7,7 +7,6 @@ import ShareButton from './ShareButton'
 import ActivityList from './ActivityList'
 import BottomNav from './BottomNav'
 import PullToRefresh from './PullToRefresh'
-import ThemeToggleButton from './ThemeToggleButton'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -67,9 +66,7 @@ export default async function DashboardPage() {
                 Bonjour, {firstName}
               </span>
             </div>
-            <div className="flex items-center gap-2">
-              <ThemeToggleButton />
-              <Link
+            <Link
               href="/dashboard/profile"
               className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0"
               style={{ background: 'var(--dash-surface-2)', border: '1px solid var(--dash-border-em)' }}
@@ -82,7 +79,6 @@ export default async function DashboardPage() {
                 </div>
               )}
             </Link>
-            </div>
           </header>
 
           <main className="px-5 py-5 space-y-4">

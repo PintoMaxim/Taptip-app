@@ -3,7 +3,6 @@ import { redirect } from 'next/navigation'
 import { getProfile } from '@/app/actions/profile'
 import ProfileForm from '../ProfileForm'
 import BottomNav from '../BottomNav'
-import ThemeToggleButton from '../ThemeToggleButton'
 import Link from 'next/link'
 
 export default async function ProfileSettingsPage() {
@@ -41,8 +40,7 @@ export default async function ProfileSettingsPage() {
               </div>
             )}
           </Link>
-          <h1 className="text-base font-semibold flex-1" style={{ color: 'var(--dash-text)' }}>Mon Profil</h1>
-          <ThemeToggleButton />
+          <h1 className="text-base font-semibold" style={{ color: 'var(--dash-text)' }}>Mon Profil</h1>
         </header>
 
         <main className="px-5 py-6 pb-24">

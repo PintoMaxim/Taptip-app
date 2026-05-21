@@ -5,7 +5,7 @@ import { getProfile } from '@/app/actions/profile'
 import StripeConnectButton from '../StripeConnectButton'
 import LogoutButton from '../LogoutButton'
 import BottomNav from '../BottomNav'
-import ThemeToggleButton from '../ThemeToggleButton'
+import ThemeSettingRow from '../ThemeSettingRow'
 import CopyProfileLink from './CopyProfileLink'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -61,8 +61,7 @@ export default async function SettingsPage() {
           }}
         >
           <Image src="/logo.png" alt="Logo" width={28} height={28} />
-          <h1 className="text-base font-semibold flex-1" style={{ color: 'var(--dash-text)' }}>Paramètres</h1>
-          <ThemeToggleButton />
+          <h1 className="text-base font-semibold" style={{ color: 'var(--dash-text)' }}>Paramètres</h1>
         </header>
 
         <main className="px-5 py-5 space-y-6">
@@ -179,6 +178,14 @@ export default async function SettingsPage() {
                 <span style={{ color: 'var(--dash-text-3)' }}>→</span>
               </div>
             </Link>
+          </section>
+
+          {/* Section Apparence */}
+          <section>
+            <p style={sectionLabel}>Apparence</p>
+            <div style={{ ...card, overflow: 'hidden' }}>
+              <ThemeSettingRow />
+            </div>
           </section>
 
           {/* Section Compte */}
