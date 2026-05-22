@@ -17,7 +17,7 @@ export default function CopyProfileLink({ userId }: { userId: string }) {
       onClick={handleCopy}
       className="relative inline-flex items-center gap-2 px-2 py-1 rounded cursor-pointer transition-all duration-200"
       style={{
-        fontFamily: 'var(--font-jetbrains), monospace',
+        fontFamily: 'var(--font-inter), sans-serif',
         fontSize: '11px',
         background: '#141414',
         border: '1px solid rgba(255,255,255,0.1)',

@@ -47,8 +47,6 @@ body {
   overflow-x: hidden;
   min-height: 100vh;
   min-height: 100dvh;
-  /* Disable slashed/dotted zeros from JetBrains Mono */
-  font-feature-settings: "zero" 0, "calt" 1;
 }
 
 /* Optimisation du rendu et de la fluidité */

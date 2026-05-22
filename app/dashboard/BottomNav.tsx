@@ -62,7 +62,7 @@ export default function BottomNav() {
                 <span
                   className="text-[10px] font-semibold tracking-wide"
                   style={{
-                    fontFamily: 'var(--font-jetbrains), monospace',
+                    fontFamily: 'var(--font-inter), sans-serif',
                     fontFeatureSettings: '"zero" 0',
                     color: isActive ? ACCENT : INACTIVE,
                   }}

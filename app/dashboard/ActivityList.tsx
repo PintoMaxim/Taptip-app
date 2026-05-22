@@ -63,7 +63,7 @@ export default function ActivityList({ activities, initialLimit }: ActivityListP
             onClick={() => setShowAll(!showAll)}
             className="text-[10px] font-bold px-2.5 py-1 rounded-full active:scale-95 transition-all"
             style={{
-              fontFamily: 'var(--font-jetbrains), monospace', fontFeatureSettings: '"zero" 0',
+              fontFamily: 'var(--font-inter), sans-serif',
               color: 'var(--dash-text-2)',
               background: 'var(--dash-surface-2)',
               border: '1px solid var(--dash-border)',
@@ -114,7 +114,7 @@ export default function ActivityList({ activities, initialLimit }: ActivityListP
                   &ldquo;{activity.comment}&rdquo;
                 </p>
               )}
-              <p className="text-[10px]" style={{ color: 'var(--dash-text-3)', fontFamily: 'var(--font-jetbrains), monospace' }}>
+              <p className="text-[10px]" style={{ color: 'var(--dash-text-3)', fontFamily: 'var(--font-inter), sans-serif' }}>
                 {formatDate(activity.created_at)}
               </p>
             </div>
@@ -122,7 +122,7 @@ export default function ActivityList({ activities, initialLimit }: ActivityListP
             {/* Valeur */}
             <div className="text-right">
               {activity.type === 'tip' ? (
-                <span className="text-base font-bold" style={{ color: 'oklch(0.78 0.18 155)', fontFamily: 'var(--font-jetbrains), monospace' }}>
+                <span className="text-base font-bold" style={{ color: 'oklch(0.78 0.18 155)', fontFamily: 'var(--font-inter), sans-serif' }}>
                   +{formatAmount(activity.amount!)}
                 </span>
               ) : (
