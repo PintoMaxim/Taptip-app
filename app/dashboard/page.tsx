@@ -98,13 +98,13 @@ export default async function DashboardPage() {
               <div className="relative z-10">
                 <p
                   className="text-xs mb-1"
-                  style={{ color: 'var(--dash-text-2)', fontFamily: 'var(--font-jetbrains), monospace', textTransform: 'uppercase', letterSpacing: '0.08em' }}
+                  style={{ color: 'var(--dash-text-2)', fontFamily: 'var(--font-jetbrains), monospace', textTransform: 'uppercase', letterSpacing: '0.08em', fontFeatureSettings: '"zero" 0' }}
                 >
                   Total reçu
                 </p>
                 <p
                   className="text-3xl font-bold mb-5"
-                  style={{ color: 'var(--dash-text)', fontFamily: 'var(--font-jetbrains), monospace' }}
+                  style={{ color: 'var(--dash-text)', fontFamily: 'var(--font-jetbrains), monospace', fontFeatureSettings: '"zero" 0' }}
                 >
                   {stats.totalReceived.toFixed(2)}€
                 </p>
@@ -112,7 +112,7 @@ export default async function DashboardPage() {
                   <div>
                     <p
                       className="text-[10px] uppercase tracking-wider mb-1"
-                      style={{ color: 'var(--dash-text-3)', fontFamily: 'var(--font-jetbrains), monospace' }}
+                      style={{ color: 'var(--dash-text-3)', fontFamily: 'var(--font-jetbrains), monospace', fontFeatureSettings: '"zero" 0' }}
                     >
                       Note moyenne
                     </p>
@@ -126,7 +126,7 @@ export default async function DashboardPage() {
                   <div>
                     <p
                       className="text-[10px] uppercase tracking-wider mb-1"
-                      style={{ color: 'var(--dash-text-3)', fontFamily: 'var(--font-jetbrains), monospace' }}
+                      style={{ color: 'var(--dash-text-3)', fontFamily: 'var(--font-jetbrains), monospace', fontFeatureSettings: '"zero" 0' }}
                     >
                       Avis reçus
                     </p>

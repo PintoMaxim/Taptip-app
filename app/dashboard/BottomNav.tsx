@@ -63,6 +63,7 @@ export default function BottomNav() {
                   className="text-[10px] font-semibold tracking-wide"
                   style={{
                     fontFamily: 'var(--font-jetbrains), monospace',
+                    fontFeatureSettings: '"zero" 0',
                     color: isActive ? ACCENT : INACTIVE,
                   }}
                 >

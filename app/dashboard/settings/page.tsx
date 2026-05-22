@@ -13,6 +13,7 @@ import Image from 'next/image'
 const sectionLabel: React.CSSProperties = {
   fontSize: '10px',
   fontFamily: 'var(--font-jetbrains), monospace',
+  fontFeatureSettings: '"zero" 0',
   textTransform: 'uppercase',
   letterSpacing: '0.1em',
   color: 'var(--dash-text-3)',
@@ -141,7 +142,7 @@ export default async function SettingsPage() {
                       <div key={n} className="flex gap-3">
                         <span
                           className="font-bold text-xs mt-0.5"
-                          style={{ color: 'oklch(0.78 0.18 155)', fontFamily: 'var(--font-jetbrains), monospace' }}
+                          style={{ color: 'oklch(0.78 0.18 155)', fontFamily: 'var(--font-jetbrains), monospace', fontFeatureSettings: '"zero" 0' }}
                         >
                           {n}
                         </span>
@@ -196,7 +197,7 @@ export default async function SettingsPage() {
                 <p className="text-sm font-medium" style={{ color: 'var(--dash-text)' }}>Email</p>
                 <p
                   className="text-[10px] mt-0.5"
-                  style={{ color: 'var(--dash-text-2)', fontFamily: 'var(--font-jetbrains), monospace' }}
+                  style={{ color: 'var(--dash-text-2)', fontFamily: 'var(--font-jetbrains), monospace', fontFeatureSettings: '"zero" 0' }}
                 >
                   {user.email}
                 </p>
@@ -234,7 +235,7 @@ export default async function SettingsPage() {
 
           <p
             className="text-center text-[10px] pt-2"
-            style={{ color: 'var(--dash-text-3)', fontFamily: 'var(--font-jetbrains), monospace' }}
+            style={{ color: 'var(--dash-text-3)', fontFamily: 'var(--font-jetbrains), monospace', fontFeatureSettings: '"zero" 0' }}
           >
             TapTip v1.0
           </p>

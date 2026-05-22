@@ -156,7 +156,7 @@ export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
         >
           <p
             className="text-[10px] uppercase tracking-widest mb-3"
-            style={{ fontFamily: 'var(--font-jetbrains), monospace', color: 'var(--dash-text-3)' }}
+            style={{ fontFamily: 'var(--font-jetbrains), monospace', color: 'var(--dash-text-3)', fontFeatureSettings: '"zero" 0' }}
           >
             Liens optionnels
           </p>
@@ -241,13 +241,13 @@ export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
       >
         <p
           className="text-[10px] uppercase mb-2 tracking-widest"
-          style={{ fontFamily: 'var(--font-jetbrains), monospace', color: 'var(--dash-text-3)' }}
+          style={{ fontFamily: 'var(--font-jetbrains), monospace', color: 'var(--dash-text-3)', fontFeatureSettings: '"zero" 0' }}
         >
           Votre lien
         </p>
         <code
           className="text-[10px] break-all"
-          style={{ color: 'var(--dash-text-2)', fontFamily: 'var(--font-jetbrains), monospace' }}
+          style={{ color: 'var(--dash-text-2)', fontFamily: 'var(--font-jetbrains), monospace', fontFeatureSettings: '"zero" 0' }}
         >
           app.taptip.fr/p/{userId}
         </code>

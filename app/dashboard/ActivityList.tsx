@@ -63,7 +63,7 @@ export default function ActivityList({ activities, initialLimit }: ActivityListP
             onClick={() => setShowAll(!showAll)}
             className="text-[10px] font-bold px-2.5 py-1 rounded-full active:scale-95 transition-all"
             style={{
-              fontFamily: 'var(--font-jetbrains), monospace',
+              fontFamily: 'var(--font-jetbrains), monospace', fontFeatureSettings: '"zero" 0',
               color: 'var(--dash-text-2)',
               background: 'var(--dash-surface-2)',
               border: '1px solid var(--dash-border)',
